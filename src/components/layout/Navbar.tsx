@@ -69,14 +69,14 @@ export default function Navbar() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: EASE }}
       className={cn(
-        "fixed top-0 inset-x-0 z-50 h-16 transition-all duration-300",
+        "fixed top-0 inset-x-0 z-50 transition-all duration-300",
         scrolled
           ? "bg-white/80 backdrop-blur-xl border-b border-[#e5e5e5]"
           : "bg-white border-b border-transparent"
       )}
       style={scrolled ? { boxShadow: "0 1px 0 rgba(0,0,0,0.1)" } : undefined}
     >
-      <div className="max-w-[1200px] mx-auto h-16 px-6 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+      <div className="max-w-[1200px] mx-auto py-4 px-6 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
 
         {/* Logo */}
         <Link href="/">
@@ -85,7 +85,7 @@ export default function Navbar() {
             alt="Homesta Cars"
             width={320}
             height={104}
-            className="w-[130px] md:w-[160px] h-auto object-contain"
+            className="h-10 w-auto object-contain"
             priority
           />
         </Link>

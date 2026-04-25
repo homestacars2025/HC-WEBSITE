@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
-import { Cairo } from "next/font/google";
+import { Cairo, Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { CurrencyProvider } from "@/lib/context/currency-context";
 import "../globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 const cairo = Cairo({
   subsets: ["arabic", "latin"],
@@ -62,7 +68,7 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       dir={dir}
-      className={`h-full antialiased${isArabic ? ` ${cairo.variable}` : ""}`}
+      className={`h-full antialiased ${isArabic ? cairo.variable : inter.variable}`}
     >
       <body
         className={`min-h-full flex flex-col bg-background text-foreground${isArabic ? " font-cairo" : ""}`}
