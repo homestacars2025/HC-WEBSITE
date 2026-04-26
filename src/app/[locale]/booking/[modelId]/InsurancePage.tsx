@@ -392,29 +392,27 @@ export default function InsurancePage({ model, pickupDate, returnDate }: Insuran
             </div>
 
             {/* Sidebar summary */}
-            <div className="bg-white rounded-2xl shadow-md p-6 sticky top-20">
-              <h2 className="text-[17px] font-bold text-[#0a0a0a] mb-5">{t("summaryTitle")}</h2>
+            <div className="bg-white rounded-2xl shadow-md px-8 py-10 sticky top-20">
+              <h2 className="text-[17px] font-bold text-[#0a0a0a] mb-7">{t("summaryTitle")}</h2>
 
               {/* Car */}
-              <div className="flex items-center gap-3 pb-4 mb-4 border-b border-[#f0f0f0]">
+              <div className="pb-7 mb-7 border-b border-[#f0f0f0]">
                 {model.image_url ? (
-                  <div className="relative w-20 h-14 rounded-xl overflow-hidden bg-[#f5f5f7] shrink-0">
-                    <Image src={model.image_url} alt={title} fill className="object-contain p-1.5" />
+                  <div className="relative w-full aspect-[3/2] rounded-xl overflow-hidden bg-[#f5f5f7] mb-3">
+                    <Image src={model.image_url} alt={title} fill className="object-cover" />
                   </div>
                 ) : (
-                  <div className="w-20 h-14 rounded-xl bg-[#f5f5f7] flex items-center justify-center shrink-0">
-                    <Car className="w-6 h-6 text-[#b0b0b0]" />
+                  <div className="w-full aspect-[3/2] rounded-xl bg-[#f5f5f7] flex items-center justify-center mb-3">
+                    <Car className="w-8 h-8 text-[#b0b0b0]" />
                   </div>
                 )}
-                <div className="min-w-0">
-                  <p className="text-[15px] font-bold text-[#0a0a0a] leading-snug truncate">{title}</p>
-                  <p className="text-[12px] text-[#86868b] capitalize mt-0.5">{model.category}</p>
-                </div>
+                <p className="text-[15px] font-bold text-[#0a0a0a] leading-snug">{title}</p>
+                <p className="text-[12px] text-[#86868b] capitalize mt-0.5">{model.category}</p>
               </div>
 
               {/* Dates */}
               {pickupDate && returnDate ? (
-                <div className="space-y-2 pb-4 mb-4 border-b border-[#f0f0f0]">
+                <div className="space-y-2 pb-7 mb-7 border-b border-[#f0f0f0]">
                   <SummaryRow label={t("summaryPickup")}   value={displayDate(pickupDate)} />
                   <SummaryRow label={t("summaryReturn")}   value={displayDate(returnDate)} />
                   <SummaryRow
@@ -423,14 +421,14 @@ export default function InsurancePage({ model, pickupDate, returnDate }: Insuran
                   />
                 </div>
               ) : (
-                <p className="text-[13px] text-[#86868b] italic pb-4 mb-4 border-b border-[#f0f0f0]">
+                <p className="text-[13px] text-[#86868b] italic pb-7 mb-7 border-b border-[#f0f0f0]">
                   {t("summaryNoDates")}
                 </p>
               )}
 
               {/* Price breakdown */}
               {days > 0 && (
-                <div className="space-y-2 mb-4">
+                <div className="space-y-2 mb-6">
                   <SummaryRow
                     label={t("summaryBaseRate")}
                     value={`${displayPrice(model.price)} × ${days} ${days === 1 ? t("summaryDay") : t("summaryDays")}`}
@@ -457,7 +455,7 @@ export default function InsurancePage({ model, pickupDate, returnDate }: Insuran
 
               {/* Selected protection badge */}
               <div className={cn(
-                "flex items-center gap-2 rounded-xl px-3 py-2 mb-4",
+                "flex items-center gap-2 rounded-xl px-3 py-2 mb-6",
                 PALETTE[selected].strip.replace("bg-", "bg-") + "/10",
                 "bg-[#f0f7ff]",
               )}>
@@ -467,7 +465,7 @@ export default function InsurancePage({ model, pickupDate, returnDate }: Insuran
                 </span>
               </div>
 
-              <p className="text-[11px] text-[#86868b] leading-relaxed pt-3 border-t border-[#f5f5f7]">
+              <p className="text-[11px] text-[#86868b] leading-relaxed pt-5 border-t border-[#f5f5f7]">
                 {t("summaryNote")}
               </p>
             </div>

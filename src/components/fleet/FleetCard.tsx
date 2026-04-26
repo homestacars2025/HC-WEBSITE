@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "motion/react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
@@ -18,6 +19,7 @@ import { findMatchingTier, applyDiscount, type PricingTier } from "@/lib/pricing
 import { calculateDays } from "@/lib/utils/format";
 import { EASE } from "@/lib/motion";
 import type { ModelGroup } from "@/types";
+import DateSelectionModal from "@/components/shared/DateSelectionModal";
 
 
 const CATEGORY_STYLES: Record<string, { background: string; color: string }> = {
@@ -49,6 +51,7 @@ interface Props {
 export default function FleetCard({ car, index = 0, tiers = [], pickupDate, returnDate }: Props) {
   const t = useTranslations("fleet");
   const { displayPrice } = useCurrency();
+  const [showModal, setShowModal] = useState(false);
 
   const title = [car.brand, car.model].filter(Boolean).join(" ") || car.name;
 
@@ -156,15 +159,31 @@ export default function FleetCard({ car, index = 0, tiers = [], pickupDate, retu
         </div>
 
         {/* Book Now */}
-        <Link
-          href={bookingHref}
-          className="flex items-center justify-center gap-2 w-full rounded-xl bg-[#4ba6ea] text-white text-[14px] font-semibold hover:bg-[#2d8fd4] active:scale-[0.98] transition-all duration-150"
-          style={{ height: 48 }}
-        >
-          {t("bookNow")}
-          <ArrowRight className="w-4 h-4 rtl:rotate-180" />
-        </Link>
+        {hasDates ? (
+          <Link
+            href={bookingHref}
+            className="flex items-center justify-center gap-2 w-full rounded-xl bg-[#4ba6ea] text-white text-[14px] font-semibold hover:bg-[#2d8fd4] active:scale-[0.98] transition-all duration-150"
+            style={{ height: 48 }}
+          >
+            {t("bookNow")}
+            <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+          </Link>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setShowModal(true)}
+            className="flex items-center justify-center gap-2 w-full rounded-xl bg-[#4ba6ea] text-white text-[14px] font-semibold hover:bg-[#2d8fd4] active:scale-[0.98] transition-all duration-150"
+            style={{ height: 48 }}
+          >
+            {t("bookNow")}
+            <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+          </button>
+        )}
       </div>
+
+      {showModal && (
+        <DateSelectionModal carId={car.id} onClose={() => setShowModal(false)} />
+      )}
     </motion.article>
   );
 }

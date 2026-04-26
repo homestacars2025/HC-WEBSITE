@@ -438,36 +438,34 @@ export default function ExtrasPage({ model, pickupDate, returnDate, insurancePac
             </div>
 
             {/* ── Booking summary sidebar ───────────────────────────────── */}
-            <div className="bg-white rounded-2xl shadow-md p-6 sticky top-20">
-              <h2 className="text-[17px] font-bold text-[#0a0a0a] mb-5">
+            <div className="bg-white rounded-2xl shadow-md px-8 py-10 sticky top-20">
+              <h2 className="text-[17px] font-bold text-[#0a0a0a] mb-7">
                 {t("summaryTitle")}
               </h2>
 
-              {/* Car thumbnail + name */}
-              <div className="flex items-center gap-3 pb-5 mb-5 border-b border-[#f0f0f0]">
+              {/* Car image + name */}
+              <div className="pb-7 mb-7 border-b border-[#f0f0f0]">
                 {model.image_url ? (
-                  <div className="relative w-20 h-14 rounded-xl overflow-hidden bg-[#f5f5f7] shrink-0">
+                  <div className="relative w-full aspect-[3/2] rounded-xl overflow-hidden bg-[#f5f5f7] mb-3">
                     <Image
                       src={model.image_url}
                       alt={title}
                       fill
-                      className="object-contain p-1.5"
+                      className="object-cover"
                     />
                   </div>
                 ) : (
-                  <div className="w-20 h-14 rounded-xl bg-[#f5f5f7] flex items-center justify-center shrink-0">
-                    <Car className="w-6 h-6 text-[#b0b0b0]" />
+                  <div className="w-full aspect-[3/2] rounded-xl bg-[#f5f5f7] flex items-center justify-center mb-3">
+                    <Car className="w-8 h-8 text-[#b0b0b0]" />
                   </div>
                 )}
-                <div className="min-w-0">
-                  <p className="text-[15px] font-bold text-[#0a0a0a] leading-snug truncate">{title}</p>
-                  <p className="text-[12px] text-[#86868b] capitalize mt-0.5">{model.category}</p>
-                </div>
+                <p className="text-[15px] font-bold text-[#0a0a0a] leading-snug">{title}</p>
+                <p className="text-[12px] text-[#86868b] capitalize mt-0.5">{model.category}</p>
               </div>
 
               {/* Dates + duration */}
               {pickupDate && returnDate ? (
-                <div className="space-y-2.5 pb-5 mb-5 border-b border-[#f0f0f0]">
+                <div className="space-y-2.5 pb-7 mb-7 border-b border-[#f0f0f0]">
                   <SummaryRow label={t("summaryPickup")}  value={displayDate(pickupDate)} />
                   <SummaryRow label={t("summaryReturn")}  value={displayDate(returnDate)} />
                   <SummaryRow
@@ -476,20 +474,20 @@ export default function ExtrasPage({ model, pickupDate, returnDate, insurancePac
                   />
                 </div>
               ) : (
-                <p className="text-[13px] text-[#86868b] italic pb-5 mb-5 border-b border-[#f0f0f0]">
+                <p className="text-[13px] text-[#86868b] italic pb-7 mb-7 border-b border-[#f0f0f0]">
                   {t("summaryNoDates")}
                 </p>
               )}
 
               {/* Insurance */}
-              <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#f0f0f0]">
+              <div className="flex items-center justify-between pb-6 mb-6 border-b border-[#f0f0f0]">
                 <span className="text-[13px] text-[#6e6e73]">{t("summaryInsurance")}</span>
                 <InsuranceChip pkg={insurancePackage} />
               </div>
 
               {/* Price breakdown */}
               {days > 0 && (
-                <div className="space-y-2 mb-4">
+                <div className="space-y-2 mb-6">
                   <SummaryRow
                     label={t("summaryBaseRate")}
                     value={`${displayPrice(model.price)} × ${days} ${days === 1 ? t("summaryDay") : t("summaryDays")}`}
@@ -512,7 +510,7 @@ export default function ExtrasPage({ model, pickupDate, returnDate, insurancePac
               )}
 
               {/* Extras summary */}
-              <div className="pb-4 mb-4 border-t border-[#f5f5f7] pt-4">
+              <div className="pb-6 mb-6 border-t border-[#f5f5f7] pt-6">
                 <p className="text-[12px] font-semibold text-[#86868b] uppercase tracking-wide mb-2">
                   {t("summaryExtras")}
                 </p>
@@ -537,7 +535,7 @@ export default function ExtrasPage({ model, pickupDate, returnDate, insurancePac
               </div>
 
               {/* Disclaimer */}
-              <p className="text-[11px] text-[#86868b] leading-relaxed border-t border-[#f5f5f7] pt-4">
+              <p className="text-[11px] text-[#86868b] leading-relaxed border-t border-[#f5f5f7] pt-6">
                 {t("summaryNote")}
               </p>
             </div>

@@ -132,7 +132,10 @@ export default function Hero() {
           {/* Headline */}
           <motion.h1
             variants={rise}
-            className="text-[48px] sm:text-[58px] font-bold tracking-[-0.03em] leading-[1.06] text-[#0a0a0a] mb-3"
+            className={cn(
+              "font-bold tracking-[-0.03em] leading-[1.06] text-[#0a0a0a] mb-3 text-balance",
+              isRTL ? "text-[34px] sm:text-[50px]" : "text-[48px] sm:text-[58px]"
+            )}
           >
             {t("heroTitle1")}{" "}
             <span className="text-[#4ba6ea]">{t("heroTitleHighlight")}</span>

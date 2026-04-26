@@ -4,7 +4,6 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { useTranslations, useLocale } from "next-intl";
 import { Mail, MapPin, MessageCircle } from "lucide-react";
-import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { EASE } from "@/lib/motion";
@@ -144,12 +143,10 @@ export default function ContactPage() {
 
             {/* Logo */}
             <div className="mb-8">
-              <Image
-                src="/HC LOGO.png"
+              <img
+                src="/logo.svg"
                 alt="Homesta Cars"
-                width={130}
-                height={52}
-                className="h-12 w-auto object-contain"
+                className="h-12 w-auto"
               />
             </div>
 

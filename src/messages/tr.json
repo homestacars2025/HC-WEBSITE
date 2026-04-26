@@ -288,6 +288,14 @@
       "summaryNote": "Nihai fiyat teslim alımda teyit edilecektir",
       "on": "AÇIK",
       "off": "KAPALI"
+    },
+    "dateModal": {
+      "title": "Rezervasyon Tarihlerini Seçin",
+      "subtitle": "Devam etmek için teslim alma ve iade tarihlerinizi seçin",
+      "pickupDate": "Teslim Alma Tarihi",
+      "returnDate": "İade Tarihi",
+      "minRental": "Minimum kiralama: 5 gün",
+      "continue": "Rezervasyona Devam"
     }
   },
   "footer": {

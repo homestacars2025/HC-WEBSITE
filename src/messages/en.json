@@ -288,6 +288,14 @@
       "summaryNote": "Final price will be confirmed at pickup",
       "on": "ON",
       "off": "OFF"
+    },
+    "dateModal": {
+      "title": "Select Booking Dates",
+      "subtitle": "Please choose your pickup and return dates to continue",
+      "pickupDate": "Pickup Date",
+      "returnDate": "Return Date",
+      "minRental": "Minimum rental: 5 days",
+      "continue": "Continue Booking"
     }
   },
   "details": {

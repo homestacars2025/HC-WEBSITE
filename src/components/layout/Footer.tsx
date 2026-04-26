@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { WHATSAPP_URL } from "@/lib/whatsapp";
@@ -65,17 +64,15 @@ export default function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-[1.5fr_1fr_1fr] gap-10 mb-10">
 
           {/* Brand */}
-          <div>
+          <div className="flex flex-col items-center sm:items-start">
             <Link href="/">
-              <Image
-                src="/HC LOGO.png"
+              <img
+                src="/logo.svg"
                 alt="Homesta Cars"
-                width={320}
-                height={104}
-                className="w-[120px] md:w-[150px] h-auto object-contain mb-5"
+                className="w-[120px] md:w-[150px] h-auto mb-5"
               />
             </Link>
-            <p className="text-[13px] text-[#86868b] leading-relaxed max-w-[240px]">
+            <p className="text-[13px] text-[#86868b] leading-relaxed max-w-[240px] text-center sm:text-start">
               {t("tagline")}
             </p>
             <div className="flex items-center gap-2 mt-5">
@@ -94,42 +91,47 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Quick links */}
-          <div>
-            <h4 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#86868b] mb-4">
-              {t("quickLinks")}
-            </h4>
-            <ul className="space-y-2.5">
-              {quickLinks.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="text-[13px] text-[#6e6e73] hover:text-[#0a0a0a] transition-colors duration-150">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Quick links + Contact — side by side on mobile, separate columns on sm+ */}
+          <div className="grid grid-cols-2 gap-6 sm:contents">
 
-          {/* Contact */}
-          <div>
-            <h4 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#86868b] mb-4">
-              {t("contact")}
-            </h4>
-            <ul className="space-y-2.5">
-              <li>
-                <a href="mailto:homestacars@gmail.com" className="text-[13px] text-[#6e6e73] hover:text-[#0a0a0a] transition-colors duration-150">
-                  homestacars@gmail.com
-                </a>
-              </li>
-              <li>
-                <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="text-[13px] text-[#6e6e73] hover:text-[#0a0a0a] transition-colors duration-150">
-                  {t("whatsapp")}
-                </a>
-              </li>
-              <li className="text-[13px] text-[#86868b]">
-                {t("istanbul")}
-              </li>
-            </ul>
+            {/* Quick links */}
+            <div>
+              <h4 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#86868b] mb-4">
+                {t("quickLinks")}
+              </h4>
+              <ul className="space-y-2.5">
+                {quickLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link href={link.href} className="text-[13px] text-[#6e6e73] hover:text-[#0a0a0a] transition-colors duration-150">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Contact */}
+            <div>
+              <h4 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#86868b] mb-4">
+                {t("contact")}
+              </h4>
+              <ul className="space-y-2.5">
+                <li>
+                  <a href="mailto:homestacars@gmail.com" className="text-[13px] text-[#6e6e73] hover:text-[#0a0a0a] transition-colors duration-150 break-all">
+                    homestacars@gmail.com
+                  </a>
+                </li>
+                <li>
+                  <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="text-[13px] text-[#6e6e73] hover:text-[#0a0a0a] transition-colors duration-150">
+                    {t("whatsapp")}
+                  </a>
+                </li>
+                <li className="text-[13px] text-[#86868b]">
+                  {t("istanbul")}
+                </li>
+              </ul>
+            </div>
+
           </div>
         </div>
 

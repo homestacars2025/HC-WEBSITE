@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -12,8 +12,10 @@ type Props = {
 };
 
 export default async function BookingInsurancePage({ params, searchParams }: Props) {
-  const { modelId } = await params;
+  const { modelId, locale } = await params;
   const { from = "", to = "" } = await searchParams;
+
+  if (!from || !to) redirect(`/${locale}/fleet`);
 
   const supabase = await createClient();
   const { data: model } = await supabase

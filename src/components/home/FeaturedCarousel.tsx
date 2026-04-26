@@ -13,6 +13,7 @@ import { fetchActivePricingTiers, findMatchingTier, applyDiscount, type PricingT
 import { calculateDays } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
 import type { ModelGroup } from "@/types";
+import DateSelectionModal from "@/components/shared/DateSelectionModal";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -79,18 +80,24 @@ function CarouselCard({
   onSideClick,
   tiers,
   days,
+  pickupDate,
+  returnDate,
 }: {
   car: ModelGroup;
   offset: number;
   onSideClick: () => void;
   tiers: PricingTier[];
   days: number;
+  pickupDate: string;
+  returnDate: string;
 }) {
   const t        = useTranslations("home");
   const { displayPrice } = useCurrency();
   const slot     = slotForOffset(offset);
   const title    = [car.brand, car.model].filter(Boolean).join(" ") || car.name;
   const isCenter = offset === 0;
+  const [showModal, setShowModal] = useState(false);
+  const hasDates = Boolean(pickupDate && returnDate);
 
   const tier        = findMatchingTier(tiers, days);
   const finalPrice  = applyDiscount(car.price, tier);
@@ -188,16 +195,30 @@ function CarouselCard({
         </div>
 
         {/* Book Now */}
-        <Link
-          href={`/booking/${car.id}`}
-          onClick={!isCenter ? (e) => e.preventDefault() : undefined}
-          className="mt-auto flex items-center justify-center gap-2 w-full h-9 rounded-xl bg-[#4ba6ea] text-white text-[13px] font-semibold hover:bg-[#2d8fd4] active:scale-[0.98] transition-all duration-150"
-          style={{ pointerEvents: isCenter ? "auto" : "none" }}
-        >
-          {t("bookNow")}
-          <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
-        </Link>
+        {isCenter && hasDates ? (
+          <Link
+            href={`/booking/${car.id}?from=${pickupDate}&to=${returnDate}`}
+            className="mt-auto flex items-center justify-center gap-2 w-full h-9 rounded-xl bg-[#4ba6ea] text-white text-[13px] font-semibold hover:bg-[#2d8fd4] active:scale-[0.98] transition-all duration-150"
+          >
+            {t("bookNow")}
+            <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
+          </Link>
+        ) : (
+          <button
+            type="button"
+            onClick={isCenter ? () => setShowModal(true) : undefined}
+            className="mt-auto flex items-center justify-center gap-2 w-full h-9 rounded-xl bg-[#4ba6ea] text-white text-[13px] font-semibold hover:bg-[#2d8fd4] active:scale-[0.98] transition-all duration-150"
+            style={{ pointerEvents: isCenter ? "auto" : "none" }}
+          >
+            {t("bookNow")}
+            <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
+          </button>
+        )}
       </div>
+
+      {showModal && (
+        <DateSelectionModal carId={car.id} onClose={() => setShowModal(false)} />
+      )}
     </motion.article>
   );
 }
@@ -368,6 +389,8 @@ export default function FeaturedCarousel() {
               onSideClick={() => goTo(i)}
               tiers={tiers}
               days={days}
+              pickupDate={pickupDate}
+              returnDate={returnDate}
             />
           ))}
         </div>
