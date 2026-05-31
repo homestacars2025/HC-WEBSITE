@@ -47,6 +47,9 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+// This is the top-level layout for every page and the single place that renders
+// <html> and <body>. The locale comes from the route param (reliable for
+// lang/dir), so Arabic correctly gets dir="rtl" and the Cairo font.
 export default async function LocaleLayout({
   children,
   params,
@@ -61,8 +64,20 @@ export default async function LocaleLayout({
   }
 
   const messages = await getMessages();
+  const t = await getTranslations({ locale, namespace: "metadata" });
   const dir = locale === "ar" ? "rtl" : "ltr";
   const isArabic = locale === "ar";
+
+  // Organization structured data — references the official brand logo.
+  const SITE_URL = "https://homestacars.com";
+  const orgJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: t("siteName"),
+    url: SITE_URL,
+    logo: `${SITE_URL}/logo.svg`,
+    description: t("description"),
+  };
 
   return (
     <html
@@ -74,6 +89,10 @@ export default async function LocaleLayout({
         className={`min-h-full flex flex-col bg-background text-foreground${isArabic ? " font-cairo" : ""}`}
         style={isArabic ? { fontFamily: "var(--font-cairo), sans-serif" } : undefined}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+        />
         <NextIntlClientProvider messages={messages}>
           <CurrencyProvider>{children}</CurrencyProvider>
         </NextIntlClientProvider>

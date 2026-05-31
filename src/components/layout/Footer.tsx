@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import Image from "next/image";
 import { WHATSAPP_URL } from "@/lib/whatsapp";
 import GalataTower from "@/components/illustrations/GalataTower";
 
@@ -65,11 +66,13 @@ export default function Footer() {
 
           {/* Brand */}
           <div className="flex flex-col items-center sm:items-start">
-            <Link href="/">
-              <img
+            <Link href="/" dir="ltr" aria-label="Homesta Cars">
+              <Image
                 src="/logo.svg"
                 alt="Homesta Cars"
-                className="w-[120px] md:w-[150px] h-auto mb-5"
+                width={205}
+                height={43}
+                className="h-10 md:h-11 w-auto mb-5"
               />
             </Link>
             <p className="text-[13px] text-[#86868b] leading-relaxed max-w-[240px] text-center sm:text-start">

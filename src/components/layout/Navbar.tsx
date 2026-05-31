@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import Image from "next/image";
 import { motion, useScroll } from "motion/react";
 import { Menu, X, Globe, ChevronDown } from "lucide-react";
 import {
@@ -65,14 +66,17 @@ export default function Navbar() {
       )}
     >
       {/* ── Desktop ──────────────────────────────────────────────────────── */}
-      <div className="hidden md:flex items-center max-w-[1200px] mx-auto px-6 h-16">
+      <div className="hidden md:flex items-center max-w-[1200px] mx-auto px-6 h-14">
 
         {/* Logo */}
-        <Link href="/" className="shrink-0 me-8">
-          <img
+        <Link href="/" dir="ltr" className="shrink-0 me-8" aria-label="Homesta Cars">
+          <Image
             src="/logo.svg"
             alt="Homesta Cars"
-            className="w-[130px] h-auto"
+            width={80}
+            height={20}
+            priority
+            className="h-[20px] w-auto"
           />
         </Link>
 
@@ -153,11 +157,15 @@ export default function Navbar() {
 
       {/* ── Mobile bar ───────────────────────────────────────────────────── */}
       <div className="md:hidden flex items-center justify-between px-4 h-14">
-        <Link href="/" className="shrink-0">
-          <img
-            src="/logo.svg"
+        <Link href="/" dir="ltr" className="shrink-0" aria-label="Homesta Cars">
+          {/* Compact brand mark on mobile — the full wordmark is too wide */}
+          <Image
+            src="/logo-mark.svg"
             alt="Homesta Cars"
-            className="w-[110px] h-auto"
+            width={18}
+            height={18}
+            priority
+            className="w-[18px] h-[18px]"
           />
         </Link>
 

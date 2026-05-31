@@ -9,9 +9,11 @@ import Image from "next/image";
 import { useCurrency } from "@/lib/context/currency-context";
 import { createClient } from "@/lib/supabase/client";
 import { fetchActivePricingTiers, findMatchingTier, applyDiscount, type PricingTier } from "@/lib/pricing";
+import { findAvailableCarId } from "@/lib/supabase/availability";
 import { NATIONALITIES } from "@/lib/nationalities";
 import { cn } from "@/lib/utils";
 import type { ModelGroup } from "@/types";
+import DateSelectionModal from "@/components/shared/DateSelectionModal";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -369,9 +371,13 @@ export default function DetailsPage({
     driving_license_number:  "",
     license_issue_date:      "",
   });
-  const [errors,      setErrors]      = useState<Record<string, boolean>>({});
-  const [submitting,  setSubmitting]  = useState(false);
-  const [submitError, setSubmitError] = useState("");
+  const [errors,        setErrors]        = useState<Record<string, boolean>>({});
+  const [submitting,    setSubmitting]    = useState(false);
+  const [submitError,   setSubmitError]   = useState("");
+  // Set when the booking insert fails with the 23P01 exclusion-constraint
+  // violation (the selected dates were taken by another customer first).
+  const [datesConflict, setDatesConflict] = useState(false);
+  const [showDateModal, setShowDateModal] = useState(false);
 
   function setField(field: string, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -397,6 +403,7 @@ export default function DetailsPage({
     if (!validate()) return;
     setSubmitting(true);
     setSubmitError("");
+    setDatesConflict(false);
 
     const supabase = createClient();
 
@@ -426,13 +433,23 @@ export default function DetailsPage({
       return;
     }
 
-    // 2 ── Get first car for this model group ─────────────────────────────────
-    const { data: firstCar } = await supabase
-      .from("cars")
-      .select("id")
-      .eq("model_group_id", model.id)
-      .limit(1)
-      .maybeSingle();
+    // 2 ── Choose an actually-available car in this model group ───────────────
+    //   The fleet filter promises ≥1 free car at the MODEL level, but the
+    //   booking targets a SPECIFIC car. Pick one that is free in both
+    //   car_calendar and active bookings (inclusive range, matching the
+    //   no_overlapping_bookings constraint). Fall back to the first car — the
+    //   23P01 handler below is the final safety net for races.
+    let carId = await findAvailableCarId(supabase, model.id, pickupDate, returnDate);
+    if (carId == null) {
+      const { data: firstCar } = await supabase
+        .from("cars")
+        .select("id")
+        .eq("model_group_id", model.id)
+        .order("id", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+      carId = firstCar?.id ?? null;
+    }
 
     // 3 ── Generate booking number ─────────────────────────────────────────────
     const now    = new Date();
@@ -458,7 +475,7 @@ export default function DetailsPage({
     const { data: booking, error: bookingError } = await supabase
       .from("bookings")
       .insert({
-        car_id:          firstCar?.id ?? null,
+        car_id:          carId,
         start_date:      pickupDate,
         end_date:        returnDate,
         insurance_type:  insurancePackage,
@@ -472,8 +489,22 @@ export default function DetailsPage({
       .single();
 
     if (bookingError || !booking) {
-      console.error("❌ Booking insert error:", JSON.stringify(bookingError, null, 2));
-      setSubmitError(t("errorSubmit"));
+      console.error("❌ Booking insert error:", {
+        code:    bookingError?.code,
+        message: bookingError?.message,
+        details: bookingError?.details,
+        hint:    bookingError?.hint,
+      });
+
+      // 23P01 = exclusion-constraint violation ("no_overlapping_bookings"):
+      // another customer booked this car for the selected dates first. Show a
+      // clear, actionable message instead of the generic error.
+      if (bookingError?.code === "23P01") {
+        setDatesConflict(true);
+        setSubmitError(t("errorUnavailable"));
+      } else {
+        setSubmitError(t("errorSubmit"));
+      }
       setSubmitting(false);
       return;
     }
@@ -481,6 +512,16 @@ export default function DetailsPage({
     router.push(
       `/booking/success?ref=${encodeURIComponent(bookingNumber)}&car=${encodeURIComponent(title)}`
     );
+  }
+
+  // Navigate to the fleet page, preserving the selected date range so the
+  // customer can pick a different car for the same dates.
+  function handleBrowseOtherCars() {
+    const params = new URLSearchParams();
+    if (pickupDate) params.set("from", pickupDate);
+    if (returnDate) params.set("to", returnDate);
+    const qs = params.toString();
+    router.push(qs ? `/fleet?${qs}` : "/fleet");
   }
 
   // ── Render ──────────────────────────────────────────────────────────────────
@@ -683,14 +724,41 @@ export default function DetailsPage({
                 </div>
               </SectionCard>
 
-              {/* Validation error banner */}
-              {(Object.values(errors).some(Boolean) || submitError) && (
-                <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-2xl px-5 py-4">
-                  <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
-                  <p className="text-[14px] text-red-600 font-medium">
-                    {submitError || t("errorRequired")}
-                  </p>
+              {/* Dates-taken conflict (23P01): actionable message + recovery buttons */}
+              {datesConflict ? (
+                <div className="bg-red-50 border border-red-200 rounded-2xl px-5 py-4">
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                    <p className="text-[14px] text-red-600 font-medium leading-relaxed">
+                      {submitError}
+                    </p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                    <button
+                      type="button"
+                      onClick={handleBrowseOtherCars}
+                      className="flex-1 h-12 rounded-xl bg-[#4ba6ea] text-white text-[14px] font-semibold hover:bg-[#2d8fd4] active:scale-[0.98] transition-all duration-150"
+                    >
+                      {t("errorBrowseOtherCars")}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowDateModal(true)}
+                      className="flex-1 h-12 rounded-xl bg-white border border-[#e5e5e5] text-[#1d1d1f] text-[14px] font-semibold hover:bg-[#f5f5f7] active:scale-[0.98] transition-all duration-150"
+                    >
+                      {t("errorChangeDates")}
+                    </button>
+                  </div>
                 </div>
+              ) : (
+                (Object.values(errors).some(Boolean) || submitError) && (
+                  <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-2xl px-5 py-4">
+                    <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
+                    <p className="text-[14px] text-red-600 font-medium">
+                      {submitError || t("errorRequired")}
+                    </p>
+                  </div>
+                )
               )}
 
               {/* Submit */}
@@ -836,6 +904,14 @@ export default function DetailsPage({
         </div>
 
       </main>
+
+      {/* Change-dates flow reuses the existing booking date modal */}
+      {showDateModal && (
+        <DateSelectionModal
+          carId={String(model.id)}
+          onClose={() => setShowDateModal(false)}
+        />
+      )}
     </div>
   );
 }

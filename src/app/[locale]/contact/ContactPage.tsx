@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "motion/react";
+import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import { Mail, MapPin, MessageCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -142,10 +143,12 @@ export default function ContactPage() {
           <motion.div className="max-w-sm mx-auto lg:mx-0 w-full" {...fadeUp(0)}>
 
             {/* Logo */}
-            <div className="mb-8">
-              <img
+            <div className="mb-8" dir="ltr">
+              <Image
                 src="/logo.svg"
                 alt="Homesta Cars"
+                width={229}
+                height={48}
                 className="h-12 w-auto"
               />
             </div>
