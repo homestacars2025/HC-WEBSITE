@@ -39,6 +39,13 @@ export async function generateMetadata({
     openGraph: {
       siteName: t("siteName"),
       locale,
+      // Referenced explicitly because the opengraph-image.png file lives at the
+      // app root (it can't sit in this dynamic [locale] segment — Turbopack
+      // fails to resolve metadata images nested under a dynamic route). Defining
+      // openGraph here would otherwise drop the inherited root-level og:image.
+      images: [
+        { url: "/opengraph-image.png", width: 1200, height: 630, alt: t("siteName") },
+      ],
     },
   };
 }
