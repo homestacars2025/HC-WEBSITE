@@ -57,6 +57,7 @@ export default function DatePicker({
 }: DatePickerProps) {
   const t      = useTranslations("common");
   const locale = useLocale();
+  const isRTL  = locale === "ar";
 
   const todayYMD  = toYMD(new Date());
   const initDate  = value ? parseYMD(value) : new Date();
@@ -65,7 +66,43 @@ export default function DatePicker({
   const [viewYear,   setViewYear]   = useState(initDate.getFullYear());
   const [viewMonth,  setViewMonth]  = useState(initDate.getMonth());
 
+  // Popover position/size, resolved against the real viewport so the calendar
+  // is never clipped — critical on mobile where the trigger lives in a narrow
+  // grid column and a fixed-width dropdown would overflow the screen edge.
+  const [pos, setPos] = useState<{ left: number; width: number } | null>(null);
+
   const rootRef = useRef<HTMLDivElement>(null);
+
+  // Center the popover under the trigger, then clamp it inside the viewport
+  // (with a small margin) so both date columns and the month-nav arrows stay
+  // fully on-screen in RTL and LTR alike. Uses physical `left`, so it is
+  // direction-agnostic.
+  function computePosition() {
+    const el = rootRef.current;
+    if (!el || typeof window === "undefined") return;
+    const rect   = el.getBoundingClientRect();
+    const vw     = window.innerWidth;
+    const margin = 12;
+    const width  = Math.min(320, vw - margin * 2);
+    let left     = rect.left + rect.width / 2 - width / 2;   // centered under trigger
+    left         = Math.max(margin, Math.min(left, vw - width - margin));
+    setPos({ left: left - rect.left, width });               // store relative to container
+  }
+
+  function toggleOpen() {
+    setOpen(o => {
+      if (!o) computePosition();
+      return !o;
+    });
+  }
+
+  // Keep the popover on-screen if the viewport is resized while it is open.
+  useEffect(() => {
+    if (!open) return;
+    function onResize() { computePosition(); }
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [open]);
 
   // Keep view in sync when value is changed externally
   useEffect(() => {
@@ -126,7 +163,7 @@ export default function DatePicker({
       {/* ── Trigger button ────────────────────────────────────────────── */}
       <button
         type="button"
-        onClick={() => setOpen(o => !o)}
+        onClick={toggleOpen}
         className={cn(
           "w-full bg-[#f5f5f7] rounded-xl px-4 h-14 flex flex-col gap-0.5 justify-center text-start transition-all",
           open ? "ring-2 ring-[#4ba6ea] bg-white" : "hover:bg-[#ebebeb]"
@@ -154,8 +191,12 @@ export default function DatePicker({
             animate={{ opacity: 1, y: 0,  scale: 1    }}
             exit={{    opacity: 0, y: 4,  scale: 0.97 }}
             transition={{ duration: 0.14 }}
-            className="absolute top-[calc(100%+8px)] start-0 z-50 bg-white rounded-2xl p-5 w-72"
-            style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.13)" }}
+            className="absolute top-[calc(100%+8px)] z-50 bg-white rounded-2xl p-5"
+            style={{
+              boxShadow: "0 8px 40px rgba(0,0,0,0.13)",
+              left:  pos ? pos.left  : 0,
+              width: pos ? pos.width : "min(20rem, calc(100vw - 1.5rem))",
+            }}
           >
 
             {/* Month / year navigation */}
@@ -165,7 +206,7 @@ export default function DatePicker({
                 onClick={prevMonth}
                 className="w-8 h-8 rounded-full flex items-center justify-center text-[#6e6e73] hover:bg-[#f5f5f7] transition-colors"
               >
-                <ChevronLeft className="w-4 h-4" />
+                {isRTL ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
               </button>
               <span className="text-[15px] font-bold text-[#0a0a0a] capitalize">
                 {monthName}
@@ -175,7 +216,7 @@ export default function DatePicker({
                 onClick={nextMonth}
                 className="w-8 h-8 rounded-full flex items-center justify-center text-[#6e6e73] hover:bg-[#f5f5f7] transition-colors"
               >
-                <ChevronRight className="w-4 h-4" />
+                {isRTL ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
               </button>
             </div>
 
@@ -206,12 +247,18 @@ export default function DatePicker({
                 const isInRange    = hasRange && ymd > rangeStart! && ymd < rangeEnd!;
                 const isEndpoint   = isRangeStart || isRangeEnd || isSelected;
 
+                // The half-strip on each endpoint must point toward the rest of
+                // the range. The range flows left→right in LTR but right→left in
+                // RTL, so the gradient direction is mirrored for Arabic.
+                const startDir = isRTL ? "to left"  : "to right";
+                const endDir   = isRTL ? "to right" : "to left";
+
                 let stripStyle: React.CSSProperties = {};
                 if (hasRange) {
                   if (isRangeStart && !isRangeEnd)
-                    stripStyle = { background: "linear-gradient(to right, transparent 50%, #dbeafe 50%)" };
+                    stripStyle = { background: `linear-gradient(${startDir}, transparent 50%, #dbeafe 50%)` };
                   else if (isRangeEnd && !isRangeStart)
-                    stripStyle = { background: "linear-gradient(to left, transparent 50%, #dbeafe 50%)" };
+                    stripStyle = { background: `linear-gradient(${endDir}, transparent 50%, #dbeafe 50%)` };
                   else if (isInRange)
                     stripStyle = { backgroundColor: "#dbeafe" };
                 }
