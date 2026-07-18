@@ -5,16 +5,16 @@ import {
   buildEnrollmentXml,
   toKurus,
   postToBank,
-  generateMerchantOrderId,
   requestOrigin,
 } from "@/lib/kuveytturk";
+import { createClient } from "@/lib/supabase/server";
 
 // Handles card data — must never be cached or statically rendered.
 export const dynamic = "force-dynamic";
 
 interface InitiateBody {
-  amount?: number | string;
-  orderId?: string;
+  // The amount is NEVER accepted from the client — it is read from the booking.
+  bookingNumber?: string;
   cardNumber?: string;
   cardHolderName?: string;
   expireMonth?: string; // "MM"
@@ -46,10 +46,34 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
 
-  // ── Validate amount ──
-  const amountTl = Number(body.amount);
-  if (!Number.isFinite(amountTl) || amountTl <= 0) {
-    return NextResponse.json({ error: "invalid_amount" }, { status: 400 });
+  // ── Resolve the amount from the BOOKING, never from the client ──
+  // The browser sends only a booking number; the payable total was computed and
+  // stored server-side at booking creation. This closes the price-tampering hole
+  // where a user could edit the amount in the checkout form.
+  const bookingNumber = (body.bookingNumber ?? "").trim();
+  if (!bookingNumber) {
+    return NextResponse.json({ error: "missing_booking" }, { status: 400 });
+  }
+
+  const supabase = await createClient();
+  const { data: booking, error: bookingErr } = await supabase
+    .from("bookings")
+    .select("booking_number, total_amount, currency, payment_status")
+    .eq("booking_number", bookingNumber)
+    .maybeSingle();
+
+  if (bookingErr || !booking) {
+    return NextResponse.json({ error: "booking_not_found" }, { status: 404 });
+  }
+  if ((booking as { payment_status?: string }).payment_status === "paid") {
+    return NextResponse.json({ error: "already_paid" }, { status: 409 });
+  }
+
+  const amountTl = Number((booking as { total_amount?: number | null }).total_amount);
+  const currency = (booking as { currency?: string }).currency ?? "TRY";
+  if (!Number.isFinite(amountTl) || amountTl <= 0 || currency !== "TRY") {
+    // Pricing missing/invalid (or a non-TRY booking) — refuse rather than guess.
+    return NextResponse.json({ error: "amount_unavailable" }, { status: 409 });
   }
   const amount = toKurus(amountTl);
 
@@ -73,7 +97,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid_holder" }, { status: 400 });
   }
 
-  const merchantOrderId = (body.orderId ?? "").trim() || generateMerchantOrderId();
+  // Tie the bank transaction to the booking for traceability and so the confirm
+  // step can mark the booking paid.
+  const merchantOrderId = bookingNumber;
 
   // The bank posts the auth result to these URLs; /api/payment/confirm parses
   // it, runs the provision step, then forwards the browser to the result page.

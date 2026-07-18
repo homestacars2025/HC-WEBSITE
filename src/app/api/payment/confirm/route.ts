@@ -9,6 +9,7 @@ import {
   SUCCESS_CODE,
   type KuveytConfig,
 } from "@/lib/kuveytturk";
+import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,8 @@ export async function POST(req: NextRequest) {
   } catch {
     return NextResponse.redirect(new URL("/payment/fail?code=config", origin), 303);
   }
+
+  const supabase = await createClient();
 
   // ── Read the bank callback (application/x-www-form-urlencoded) ──
   let authXml = "";
@@ -84,6 +87,18 @@ export async function POST(req: NextRequest) {
   if (provisionCode === SUCCESS_CODE) {
     const provisionNumber = extractTag(provisionResponse, "ProvisionNumber");
     const bankOrderId = extractTag(provisionResponse, "OrderId");
+
+    // Mark the booking paid (merchantOrderId == booking_number). Best-effort:
+    // the money is already collected, so a failed update must not fail the flow.
+    try {
+      await supabase
+        .from("bookings")
+        .update({ payment_status: "paid", status: "confirmed" } as never)
+        .eq("booking_number", merchantOrderId);
+    } catch (e) {
+      console.error("[payment] booking mark-paid failed", { merchantOrderId, e });
+    }
+
     const qs = new URLSearchParams({
       order: merchantOrderId,
       ref: provisionNumber,

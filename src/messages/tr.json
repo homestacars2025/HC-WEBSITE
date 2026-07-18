@@ -208,7 +208,8 @@
     "failMessage": "Ödemeniz tamamlanamadı.",
     "errorCode": "Hata Kodu",
     "tryAgain": "Tekrar Dene",
-    "backHome": "Ana Sayfaya Dön"
+    "backHome": "Ana Sayfaya Dön",
+    "noBooking": "Seçili rezervasyon yok. Ödemek için rezervasyonunuzdan başlayın."
   },
   "booking": {
     "title": "Araç Rezervasyonu",
@@ -451,7 +452,8 @@
     "bookingRef": "Rezervasyon Numarası",
     "message": "Müşteri hizmetleri ekibimiz, rezervasyon detaylarınızı onaylamak için kısa süre içinde WhatsApp üzerinden sizinle iletişime geçecektir.",
     "whatsapp": "WhatsApp'tan İletişim",
-    "backHome": "Ana Sayfaya Dön"
+    "backHome": "Ana Sayfaya Dön",
+    "payNow": "Şimdi online öde"
   },
   "common": {
     "loading": "Yükleniyor...",

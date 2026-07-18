@@ -17,17 +17,22 @@ function formatCardNumber(value: string): string {
     .trim();
 }
 
-export default function CheckoutForm({ initialAmount }: { initialAmount: string }) {
+export default function CheckoutForm({
+  bookingNumber,
+  amount,
+}: {
+  bookingNumber: string;
+  amount: string;
+}) {
   const t = useTranslations("payment");
   const locale = useLocale();
   const isRTL = locale === "ar";
 
-  // SECURITY: `amount` must NOT be user-editable — the payable total has to be
-  // derived server-side from the booking (see the permanent fix tracked in
-  // /api/payment/initiate). This field is read-only as an interim guard; the
-  // value still originates from the URL, so the server remains the source of
-  // truth once the booking_id flow lands.
-  const [amount] = useState(initialAmount);
+  // SECURITY: the customer never types or edits the amount. It is loaded from
+  // the booking (read-only display) and the server re-reads it from the booking
+  // via `bookingNumber` in /api/payment/initiate — the amount below is display
+  // only and is never sent.
+  const bookingValid = Boolean(bookingNumber) && Boolean(amount);
   const [cardNumber, setCardNumber] = useState("");
   const [cardHolder, setCardHolder] = useState("");
   const [expireMonth, setExpireMonth] = useState("");
@@ -38,6 +43,10 @@ export default function CheckoutForm({ initialAmount }: { initialAmount: string 
 
   const errorKey: Record<string, string> = {
     invalid_amount: t("errorAmount"),
+    amount_unavailable: t("errorAmount"),
+    missing_booking: t("errorGeneric"),
+    booking_not_found: t("errorGeneric"),
+    already_paid: t("errorGeneric"),
     invalid_card: t("errorCard"),
     invalid_expiry: t("errorExpiry"),
     invalid_cvv: t("errorCvv"),
@@ -46,6 +55,7 @@ export default function CheckoutForm({ initialAmount }: { initialAmount: string 
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!bookingValid) return;
     setError("");
     setSubmitting(true);
 
@@ -54,7 +64,8 @@ export default function CheckoutForm({ initialAmount }: { initialAmount: string 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount,
+          // Amount is intentionally NOT sent — the server reads it from the booking.
+          bookingNumber,
           cardNumber,
           cardHolderName: cardHolder,
           expireMonth,
@@ -197,11 +208,14 @@ export default function CheckoutForm({ initialAmount }: { initialAmount: string 
             </div>
           </div>
 
+          {!bookingValid && (
+            <p className="text-[14px] text-red-600">{t("noBooking")}</p>
+          )}
           {error && <p className="text-[14px] text-red-600">{error}</p>}
 
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || !bookingValid}
             className={cn(
               "w-full h-[52px] rounded-xl text-white text-[15px] font-semibold",
               "bg-[#4ba6ea] hover:bg-[#3a95d9] active:scale-[0.99]",

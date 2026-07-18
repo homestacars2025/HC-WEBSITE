@@ -208,7 +208,8 @@
     "failMessage": "Your payment could not be completed.",
     "errorCode": "Error Code",
     "tryAgain": "Try Again",
-    "backHome": "Back to Home"
+    "backHome": "Back to Home",
+    "noBooking": "No booking selected. Please start from your booking to pay."
   },
   "booking": {
     "title": "Book Your Car",
@@ -405,7 +406,8 @@
     "bookingRef": "Booking Reference",
     "message": "Our customer service team will contact you shortly via WhatsApp to confirm your booking details.",
     "whatsapp": "Contact on WhatsApp",
-    "backHome": "Back to Home"
+    "backHome": "Back to Home",
+    "payNow": "Pay online now"
   },
   "footer": {
     "tagline": "Premium car rental in Istanbul — go your own way.",

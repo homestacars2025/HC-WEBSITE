@@ -448,6 +448,10 @@ export default function DetailsPage({
           returnDate,
           customerId:    customer.id,
           insuranceType: insurancePackage,
+          // Extras — the server re-prices from these; never sends a raw amount.
+          childSeats,
+          additionalDrivers,
+          extraKm,
         }),
       });
 
