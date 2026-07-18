@@ -2,12 +2,52 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ModelGroup } from "@/types";
 
 /**
- * Returns model_groups that have at least one available car for the given
- * date range, with `available_count` attached to each result.
+ * Number of ACTIVE cars per model_group_id (keyed by string).
+ *
+ * Sold / written-off / returned cars carry `cars.is_active = false` and MUST
+ * NOT count toward availability, even though their rows (and `model_group`'s
+ * stored `total_cars`) still include them. All public availability math is
+ * based on this map, never on `model_group.total_cars`.
+ */
+export async function activeCarCountByModel(
+  supabase: SupabaseClient,
+): Promise<Map<string, number>> {
+  const { data } = await supabase
+    .from("cars")
+    .select("model_group_id")
+    .eq("is_active", true);
+
+  const counts = new Map<string, number>();
+  for (const row of data ?? []) {
+    const id = (row as { model_group_id: string | number | null }).model_group_id;
+    if (id == null) continue;
+    const key = String(id);
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  return counts;
+}
+
+/** Count of ACTIVE cars in a single model group (for direct-URL guards). */
+export async function countActiveCarsInModel(
+  supabase: SupabaseClient,
+  modelGroupId: string | number,
+): Promise<number> {
+  const { count } = await supabase
+    .from("cars")
+    .select("id", { count: "exact", head: true })
+    .eq("model_group_id", modelGroupId)
+    .eq("is_active", true);
+  return count ?? 0;
+}
+
+/**
+ * Returns model_groups that have at least one available ACTIVE car for the
+ * given date range, with `available_count` attached to each result.
  *
  * Formula per model:
- *   unavailable = distinct car_ids in car_calendar where dates overlap
- *   available   = total_cars − unavailable
+ *   active      = count of cars with is_active = true in the model
+ *   unavailable = distinct ACTIVE car_ids in car_calendar where dates overlap
+ *   available   = active − unavailable
  *
  * Any entry in car_calendar blocks the car — no block_type filter applied.
  *
@@ -26,20 +66,23 @@ export async function getAvailableModels(
   pickupDate: string,
   returnDate: string,
 ): Promise<ModelGroup[]> {
-  // ── 1. All model groups ───────────────────────────────────────────────────
-  const { data: models, error: modelsError } = await supabase
-    .from("model_group")
-    .select("*")
-    .order("created_at", { ascending: false });
+  // ── 1. All model groups + active-car counts ───────────────────────────────
+  const [{ data: models, error: modelsError }, activeCounts] = await Promise.all([
+    supabase.from("model_group").select("*").order("created_at", { ascending: false }),
+    activeCarCountByModel(supabase),
+  ]);
 
   if (modelsError || !models?.length) return [];
 
-  // ── 2. Blocked car_ids with their model_group_id via the cars table ───────
+  // ── 2. Blocked ACTIVE car_ids with their model_group_id via the cars table ─
   //   car_calendar.car_id  →  cars.id  →  cars.model_group_id
   //   ANY entry in car_calendar means the car is unavailable — no block_type filter.
+  //   `cars.is_active = true` on the inner join ensures blocks on already-sold
+  //   cars don't distort the count (a sold car isn't in the active base anyway).
   const { data: blocked } = await supabase
     .from("car_calendar")
-    .select("car_id, cars!inner(model_group_id)")
+    .select("car_id, cars!inner(model_group_id, is_active)")
+    .eq("cars.is_active", true)
     .lte("start_date", returnDate)
     .gte("end_date",   pickupDate);
 
@@ -50,16 +93,18 @@ export async function getAvailableModels(
     const carsJoin = row.cars as { model_group_id: string } | { model_group_id: string }[] | null;
     const modelId = Array.isArray(carsJoin) ? carsJoin[0]?.model_group_id : carsJoin?.model_group_id;
     if (!modelId || !row.car_id) continue;
-    if (!blockedByModel.has(modelId)) blockedByModel.set(modelId, new Set());
-    blockedByModel.get(modelId)!.add(row.car_id as string);
+    const key = String(modelId);
+    if (!blockedByModel.has(key)) blockedByModel.set(key, new Set());
+    blockedByModel.get(key)!.add(row.car_id as string);
   }
 
-  // ── 4. Attach available_count, keep only models with ≥ 1 available car ───
+  // ── 4. Attach available_count from ACTIVE cars, keep models with ≥ 1 free ─
   return (models as ModelGroup[])
-    .map((m) => ({
-      ...m,
-      available_count: m.total_cars - (blockedByModel.get(m.id)?.size ?? 0),
-    }))
+    .map((m) => {
+      const active = activeCounts.get(String(m.id)) ?? 0;
+      const blockedCount = blockedByModel.get(String(m.id))?.size ?? 0;
+      return { ...m, available_count: active - blockedCount };
+    })
     .filter((m) => (m.available_count ?? 0) > 0);
 }
 
@@ -86,10 +131,13 @@ export async function findAvailableCarId(
   pickupDate: string,
   returnDate: string,
 ): Promise<string | number | null> {
+  // Only ACTIVE cars are bookable — sold / written-off cars (is_active = false)
+  // must never be selected for a new booking.
   const { data: cars } = await supabase
     .from("cars")
     .select("id")
     .eq("model_group_id", modelGroupId)
+    .eq("is_active", true)
     .order("id", { ascending: true });
 
   if (!cars?.length) return null;

@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { getAvailableModels } from "@/lib/supabase/availability";
+import { getAvailableModels, activeCarCountByModel } from "@/lib/supabase/availability";
 import { fetchActivePricingTiers, type PricingTier } from "@/lib/pricing";
 import Filters from "./Filters";
 import CarGrid from "./CarGrid";
@@ -52,14 +52,20 @@ export default function FleetClient() {
         const models = await getAvailableModels(client, pickupDate, returnDate);
         setAllCars(models);
       } else {
-        // No date range — show everything
-        const { data, error: err } = await client
-          .from("model_group")
-          .select("*")
-          .order("created_at", { ascending: false });
+        // No date range — show every model group that still has an active car
+        // (groups whose cars were all sold / removed must not appear in stock).
+        const [{ data, error: err }, activeCounts] = await Promise.all([
+          client.from("model_group").select("*").order("created_at", { ascending: false }),
+          activeCarCountByModel(client),
+        ]);
 
         if (err) setError(err.message);
-        else     setAllCars((data ?? []) as ModelGroup[]);
+        else
+          setAllCars(
+            ((data ?? []) as ModelGroup[]).filter(
+              (m) => (activeCounts.get(String(m.id)) ?? 0) > 0,
+            ),
+          );
       }
       setLoading(false);
     };

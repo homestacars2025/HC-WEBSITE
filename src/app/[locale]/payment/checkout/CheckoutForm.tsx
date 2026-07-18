@@ -22,7 +22,12 @@ export default function CheckoutForm({ initialAmount }: { initialAmount: string 
   const locale = useLocale();
   const isRTL = locale === "ar";
 
-  const [amount, setAmount] = useState(initialAmount);
+  // SECURITY: `amount` must NOT be user-editable — the payable total has to be
+  // derived server-side from the booking (see the permanent fix tracked in
+  // /api/payment/initiate). This field is read-only as an interim guard; the
+  // value still originates from the URL, so the server remains the source of
+  // truth once the booking_id flow lands.
+  const [amount] = useState(initialAmount);
   const [cardNumber, setCardNumber] = useState("");
   const [cardHolder, setCardHolder] = useState("");
   const [expireMonth, setExpireMonth] = useState("");
@@ -92,20 +97,19 @@ export default function CheckoutForm({ initialAmount }: { initialAmount: string 
           onSubmit={handleSubmit}
           className="bg-white rounded-2xl shadow-sm p-6 space-y-4"
         >
-          {/* Amount */}
+          {/* Amount — read-only. The total is fixed by the booking, never typed
+              by the customer. Editing is disabled to prevent price tampering. */}
           <div>
             <label className="block text-[13px] font-medium text-[#6e6e73] mb-1.5">
               {t("amount")} (₺)
             </label>
             <input
-              type="number"
-              inputMode="decimal"
-              min="0"
-              step="0.01"
-              required
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className={inputCls}
+              type="text"
+              readOnly
+              tabIndex={-1}
+              aria-readonly="true"
+              value={amount ? `₺${amount}` : "—"}
+              className={cn(inputCls, "bg-[#f5f5f7] text-[#6e6e73] cursor-not-allowed")}
               dir="ltr"
             />
           </div>

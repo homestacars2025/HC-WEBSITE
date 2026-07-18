@@ -1,8 +1,10 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { countActiveCarsInModel } from "@/lib/supabase/availability";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/shared/WhatsAppButton";
+import VehicleUnavailable from "@/components/booking/VehicleUnavailable";
 import InsurancePage from "./InsurancePage";
 import type { ModelGroup } from "@/types";
 
@@ -25,6 +27,18 @@ export default async function BookingInsurancePage({ params, searchParams }: Pro
     .single();
 
   if (!model) notFound();
+
+  // No active car left in this model group → not bookable.
+  if ((await countActiveCarsInModel(supabase, modelId)) === 0) {
+    return (
+      <>
+        <Navbar />
+        <VehicleUnavailable locale={locale} />
+        <Footer />
+        <WhatsAppButton />
+      </>
+    );
+  }
 
   return (
     <>

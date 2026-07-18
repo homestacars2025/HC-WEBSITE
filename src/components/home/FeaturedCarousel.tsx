@@ -10,6 +10,7 @@ import { ChevronLeft, ChevronRight, Settings2, Users, ArrowRight, Fuel } from "l
 import { createClient } from "@/lib/supabase/client";
 import { useCurrency } from "@/lib/context/currency-context";
 import { fetchActivePricingTiers, findMatchingTier, applyDiscount, type PricingTier } from "@/lib/pricing";
+import { activeCarCountByModel } from "@/lib/supabase/availability";
 import { calculateDays } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
 import type { ModelGroup } from "@/types";
@@ -277,10 +278,16 @@ export default function FeaturedCarousel() {
   useEffect(() => {
     const client = createClient();
     Promise.all([
-      client.from("model_group").select("*").order("created_at", { ascending: false }).limit(10),
+      client.from("model_group").select("*").order("created_at", { ascending: false }),
       fetchActivePricingTiers(client),
-    ]).then(([{ data }, pricingTiers]) => {
-      setCars((data ?? []) as ModelGroup[]);
+      activeCarCountByModel(client),
+    ]).then(([{ data }, pricingTiers, activeCounts]) => {
+      // Only feature model groups that still have an active car; sold-out groups
+      // must not appear on the homepage. Cap at 10 after filtering.
+      const groups = ((data ?? []) as ModelGroup[])
+        .filter((m) => (activeCounts.get(String(m.id)) ?? 0) > 0)
+        .slice(0, 10);
+      setCars(groups);
       setTiers(pricingTiers);
       setLoading(false);
     });

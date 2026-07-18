@@ -15,6 +15,7 @@ export async function getAvailableCars(filters?: {
   let query = (supabase as any)
     .from("cars")
     .select("*")
+    .eq("is_active", true) // never surface sold / removed cars
     .eq("available", true)
     .order("created_at", { ascending: false });
 
@@ -28,17 +29,23 @@ export async function getAvailableCars(filters?: {
   return data as Car[];
 }
 
-export async function getCarById(id: string) {
+/**
+ * Returns the car only when it is active. Inactive (sold / removed) cars — and
+ * missing ids — resolve to `null` so callers can render "no longer available"
+ * instead of a bookable detail view.
+ */
+export async function getCarById(id: string): Promise<Car | null> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("cars")
     .select("*")
     .eq("id", id)
-    .single();
+    .eq("is_active", true)
+    .maybeSingle();
 
   if (error) throw error;
-  return data as unknown as Car;
+  return (data as unknown as Car) ?? null;
 }
 
 export async function getFeaturedCars(limit = 4) {
@@ -47,6 +54,7 @@ export async function getFeaturedCars(limit = 4) {
   const { data, error } = await supabase
     .from("cars")
     .select("*")
+    .eq("is_active", true) // never surface sold / removed cars
     .eq("available", true)
     .limit(limit)
     .order("created_at", { ascending: false });

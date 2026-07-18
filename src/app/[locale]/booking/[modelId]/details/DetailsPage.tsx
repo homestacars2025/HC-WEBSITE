@@ -9,7 +9,6 @@ import Image from "next/image";
 import { useCurrency } from "@/lib/context/currency-context";
 import { createClient } from "@/lib/supabase/client";
 import { fetchActivePricingTiers, findMatchingTier, applyDiscount, type PricingTier } from "@/lib/pricing";
-import { findAvailableCarId } from "@/lib/supabase/availability";
 import { NATIONALITIES } from "@/lib/nationalities";
 import { cn } from "@/lib/utils";
 import type { ModelGroup } from "@/types";
@@ -433,78 +432,46 @@ export default function DetailsPage({
       return;
     }
 
-    // 2 ── Choose an actually-available car in this model group ───────────────
-    //   The fleet filter promises ≥1 free car at the MODEL level, but the
-    //   booking targets a SPECIFIC car. Pick one that is free in both
-    //   car_calendar and active bookings (inclusive range, matching the
-    //   no_overlapping_bookings constraint). Fall back to the first car — the
-    //   23P01 handler below is the final safety net for races.
-    let carId = await findAvailableCarId(supabase, model.id, pickupDate, returnDate);
-    if (carId == null) {
-      const { data: firstCar } = await supabase
-        .from("cars")
-        .select("id")
-        .eq("model_group_id", model.id)
-        .order("id", { ascending: true })
-        .limit(1)
-        .maybeSingle();
-      carId = firstCar?.id ?? null;
-    }
-
-    // 3 ── Generate booking number ─────────────────────────────────────────────
-    const now    = new Date();
-    const mm     = String(now.getMonth() + 1).padStart(2, "0");
-    const yy     = String(now.getFullYear()).slice(-2);
-    const prefix = `HOM-${mm}-${yy}-`;
-
-    const { count: existingCount } = await supabase
-      .from("bookings")
-      .select("*", { count: "exact", head: true })
-      .like("booking_number", `${prefix}%`);
-
-    const seq           = String((existingCount ?? 0) + 1).padStart(3, "0");
-    const bookingNumber = `${prefix}${seq}`;
-
-    // 4 ── Build extras payload (stored as JSON string) ───────────────────────
-    const additionalServiceObj: Record<string, unknown> = {};
-    if (childSeats > 0)       additionalServiceObj.child_seat         = childSeats;
-    if (additionalDrivers > 0) additionalServiceObj.additional_drivers = additionalDrivers;
-    if (extraKm)              additionalServiceObj.extra_km            = true;
-
-    // 5 ── Insert booking (exact columns only) ─────────────────────────────────
-    const { data: booking, error: bookingError } = await supabase
-      .from("bookings")
-      .insert({
-        car_id:          carId,
-        start_date:      pickupDate,
-        end_date:        returnDate,
-        insurance_type:  insurancePackage,
-        pickup_location: "Istanbul",
-        dropoff_location:"Istanbul",
-        booking_number:  bookingNumber,
-        customer_id:     customer.id,
-        status:          "pending",
-      })
-      .select("id")
-      .single();
-
-    if (bookingError || !booking) {
-      console.error("❌ Booking insert error:", {
-        code:    bookingError?.code,
-        message: bookingError?.message,
-        details: bookingError?.details,
-        hint:    bookingError?.hint,
+    // 2 ── Create the booking SERVER-SIDE ─────────────────────────────────────
+    //   The server picks a specific ACTIVE car in this model group, re-verifies
+    //   is_active, generates the booking number and inserts the row. Car
+    //   selection and the sold-car guard are never trusted to the client — a
+    //   sold / removed car (is_active = false) can never be booked from here.
+    let bookingNumber = "";
+    try {
+      const res = await fetch("/api/booking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          modelGroupId:  model.id,
+          pickupDate,
+          returnDate,
+          customerId:    customer.id,
+          insuranceType: insurancePackage,
+        }),
       });
 
-      // 23P01 = exclusion-constraint violation ("no_overlapping_bookings"):
-      // another customer booked this car for the selected dates first. Show a
-      // clear, actionable message instead of the generic error.
-      if (bookingError?.code === "23P01") {
-        setDatesConflict(true);
-        setSubmitError(t("errorUnavailable"));
-      } else {
-        setSubmitError(t("errorSubmit"));
+      const result = (await res.json().catch(() => ({}))) as {
+        bookingNumber?: string;
+        error?: string;
+      };
+
+      if (!res.ok || !result.bookingNumber) {
+        // dates_conflict = the car was taken for these dates (race / overlap);
+        // unavailable = the model has no active, free car (e.g. just sold out).
+        if (result.error === "dates_conflict" || result.error === "unavailable") {
+          setDatesConflict(true);
+          setSubmitError(t("errorUnavailable"));
+        } else {
+          setSubmitError(t("errorSubmit"));
+        }
+        setSubmitting(false);
+        return;
       }
+
+      bookingNumber = result.bookingNumber;
+    } catch {
+      setSubmitError(t("errorSubmit"));
       setSubmitting(false);
       return;
     }

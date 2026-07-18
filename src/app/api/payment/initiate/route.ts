@@ -101,7 +101,18 @@ export async function POST(req: NextRequest) {
   let html: string;
   try {
     html = await postToBank(cfg.payGateUrl, xml);
-  } catch {
+  } catch (e) {
+    // A connect timeout here (UND_ERR_CONNECT_TIMEOUT) almost always means the
+    // bank's firewall is dropping our egress IP — Kuveyt Türk whitelists caller
+    // IPs, and Vercel's dynamic serverless IPs are not registered. Log the cause
+    // for diagnosis; the client only needs a generic failure.
+    const err = e as Error & { cause?: { code?: string; message?: string } };
+    console.error("[kuveyt] paygate fetch failed", {
+      url: cfg.payGateUrl,
+      name: err?.name,
+      message: err?.message,
+      cause: err?.cause?.code || err?.cause?.message,
+    });
     return NextResponse.json({ error: "gateway_unreachable" }, { status: 502 });
   }
 

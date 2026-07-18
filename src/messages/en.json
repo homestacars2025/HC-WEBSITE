@@ -334,6 +334,11 @@
       "returnDate": "Return Date",
       "minRental": "Minimum rental: 5 days",
       "continue": "Continue Booking"
+    },
+    "unavailable": {
+      "title": "This vehicle is no longer available",
+      "body": "This car has been removed from our fleet. Please browse our other available cars.",
+      "browseCta": "Browse Available Cars"
     }
   },
   "details": {
