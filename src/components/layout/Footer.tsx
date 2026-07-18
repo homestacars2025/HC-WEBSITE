@@ -120,8 +120,8 @@ export default function Footer() {
               </h4>
               <ul className="space-y-2.5">
                 <li>
-                  <a href="mailto:homestacars@gmail.com" className="text-[13px] text-[#6e6e73] hover:text-[#0a0a0a] transition-colors duration-150 break-all">
-                    homestacars@gmail.com
+                  <a href="mailto:info@homestacars.com" className="text-[13px] text-[#6e6e73] hover:text-[#0a0a0a] transition-colors duration-150 break-all">
+                    info@homestacars.com
                   </a>
                 </li>
                 <li>

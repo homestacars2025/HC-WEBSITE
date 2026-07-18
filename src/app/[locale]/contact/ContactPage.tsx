@@ -19,6 +19,20 @@ const SUBJECTS = [
   { id: "other",       emoji: "💬", key: "subjectOther"       },
 ] as const;
 
+// ─── Legal company info ─────────────────────────────────────────────────────────
+// Fixed legal values. Fill in `mersisNo` and `kep` once available — rows with an
+// empty value are hidden automatically.
+const COMPANY = {
+  name:     "HOMESTA GRUP DANIŞMANLIK HİZMETLERİ LİMİTED ŞİRKETİ",
+  taxOffice:"BAŞAKŞEHİR",
+  taxNo:    "4631515171",
+  mersisNo: "",
+  address:  "KAYABAŞI MAH. GAZİ YAŞARGİL CAD. T2 BLOK NO: 2 Y BAŞAKŞEHİR / İSTANBUL",
+  kep:      "",
+  phone:    "+90 542 843 40 91",
+  email:    "info@homestacars.com",
+} as const;
+
 // ─── Social icons ─────────────────────────────────────────────────────────────
 
 function InstagramIcon({ className }: { className?: string }) {
@@ -233,6 +247,43 @@ export default function ContactPage() {
                   <TikTokIcon className="w-[15px] h-[15px]" />
                 </a>
               </div>
+            </div>
+
+            {/* Company / legal info */}
+            <div className="mt-10 pt-8 border-t border-[#e0e0e2]">
+              <p className="text-[11px] font-semibold text-[#86868b] uppercase tracking-widest mb-4">
+                {t("companyInfoTitle")}
+              </p>
+              <dl className="space-y-3">
+                {[
+                  { label: t("labelCompanyName"),    value: COMPANY.name,      ltr: true  },
+                  { label: t("labelTaxOffice"),      value: COMPANY.taxOffice, ltr: true  },
+                  { label: t("labelTaxNo"),          value: COMPANY.taxNo,     ltr: true  },
+                  { label: t("labelMersisNo"),       value: COMPANY.mersisNo,  ltr: true  },
+                  { label: t("labelCompanyAddress"), value: COMPANY.address,   ltr: false },
+                  { label: t("labelKep"),            value: COMPANY.kep,       ltr: true  },
+                  { label: t("labelCompanyPhone"),   value: COMPANY.phone,     ltr: true, href: `tel:${COMPANY.phone.replace(/\s/g, "")}` },
+                  { label: t("labelCompanyEmail"),   value: COMPANY.email,     ltr: true, href: `mailto:${COMPANY.email}` },
+                ]
+                  .filter((row) => row.value)
+                  .map((row) => (
+                    <div key={row.label} className="flex flex-col gap-0.5">
+                      <dt className="text-[11px] font-medium text-[#86868b]">{row.label}</dt>
+                      <dd
+                        className="text-[13px] text-[#1d1d1f] leading-snug break-words"
+                        dir={row.ltr ? "ltr" : undefined}
+                      >
+                        {row.href ? (
+                          <a href={row.href} className="hover:text-[#4ba6ea] transition-colors">
+                            {row.value}
+                          </a>
+                        ) : (
+                          row.value
+                        )}
+                      </dd>
+                    </div>
+                  ))}
+              </dl>
             </div>
 
           </motion.div>
