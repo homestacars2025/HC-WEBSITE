@@ -45,7 +45,9 @@ export function getKuveytConfig(): KuveytConfig {
   const merchantId = process.env.KUVEYT_MERCHANT_ID?.trim() ?? "";
   const customerId = process.env.KUVEYT_CUSTOMER_ID?.trim() ?? "";
   const userName = process.env.KUVEYT_API_USERNAME?.trim() ?? "";
-  const password = process.env.KUVEYT_API_PASSWORD ?? "";
+  // Trim like every other hashed field — a stray newline/space in the env value
+  // would otherwise change the hashed bytes and break HashData.
+  const password = process.env.KUVEYT_API_PASSWORD?.trim() ?? "";
 
   const missing = [
     ["KUVEYT_MERCHANT_ID", merchantId],
@@ -72,9 +74,24 @@ export function getKuveytConfig(): KuveytConfig {
       process.env.KUVEYT_PROVISION_URL?.trim() ||
       "https://boa.kuveytturk.com.tr/sanalposservice/Home/ThreeDModelProvisionGate",
     currencyCode: process.env.KUVEYT_CURRENCY_CODE?.trim() || "0949", // TL
-    siteUrl:
-      process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://homestacars.com",
+    siteUrl: resolveSiteUrl(),
   };
+}
+
+/**
+ * The origin used for OkUrl/FailUrl. On a Vercel PREVIEW deployment it must be
+ * the deployment's OWN origin (VERCEL_BRANCH_URL / VERCEL_URL) so the bank's 3DS
+ * callback returns to THIS preview — not to production. Everywhere else
+ * (production, local) it is the canonical NEXT_PUBLIC_SITE_URL. Computed once and
+ * used for BOTH the hash string and the <OkUrl> tag, so they stay byte-identical.
+ */
+function resolveSiteUrl(): string {
+  if (process.env.VERCEL_ENV === "preview") {
+    const own =
+      process.env.VERCEL_BRANCH_URL?.trim() || process.env.VERCEL_URL?.trim();
+    if (own) return `https://${own}`;
+  }
+  return process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://homestacars.com";
 }
 
 // ─── Hashing ────────────────────────────────────────────────────────────────
@@ -127,10 +144,39 @@ function esc(value: string): string {
     .replace(/'/g, "&apos;");
 }
 
+/**
+ * Decodes an `application/x-www-form-urlencoded` VALUE the way the bank encoded
+ * it (doc §5.2.4: the AuthenticationResponse payload is UrlEncoded).
+ *
+ * The bank uses .NET `HttpUtility.UrlEncode`, which is FORM-style: a space
+ * becomes "+", and a literal "+" becomes "%2b". `decodeURIComponent` is the
+ * RFC3986 decoder — it resolves %XX but leaves "+" as a literal plus, so a
+ * decoded message reads "Kart+doğrulandı." instead of "Kart doğrulandı.".
+ * Mapping "+" → "%20" first restores HttpUtility.UrlDecode semantics.
+ *
+ * Note this is decode #2. `req.formData()` already undid the transport-level
+ * form encoding the browser applied when it POSTed the bank's auto-submit form;
+ * this undoes the bank's own encoding of the XML, exactly as the doc instructs.
+ */
+export function formUrlDecode(value: string): string {
+  return decodeURIComponent(value.replace(/\+/g, "%20"));
+}
+
 /** Returns the inner text of the first occurrence of <tag>…</tag>, or "". */
 export function extractTag(xml: string, tag: string): string {
   const m = xml.match(new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)</${tag}>`, "i"));
   return m ? m[1].trim() : "";
+}
+
+export interface CardHolderData {
+  billAddrCity: string;
+  billAddrCountry: string; // ISO-3166 numeric, "792" = Türkiye
+  billAddrLine1: string;
+  billAddrPostCode: string;
+  billAddrState: string;
+  email: string;
+  phoneCc: string; // country calling code, e.g. "90"
+  phoneSubscriber: string; // national number without the country code
 }
 
 export interface EnrollmentParams {
@@ -145,6 +191,7 @@ export interface EnrollmentParams {
   cardCVV2: string;
   cardHolderName: string;
   hashData: string;
+  cardHolderData?: CardHolderData; // 3DS 2.0 (mandatory per bank docs)
 }
 
 /** Request 1 — card verification message (ThreeDModelPayGate). */
@@ -160,6 +207,17 @@ export function buildEnrollmentXml(cfg: KuveytConfig, p: EnrollmentParams): stri
     `<CustomerId>${esc(cfg.customerId)}</CustomerId>` +
     `<UserName>${esc(cfg.userName)}</UserName>` +
     `<DeviceData><DeviceChannel>02</DeviceChannel><ClientIP>${esc(p.clientIp)}</ClientIP></DeviceData>` +
+    (p.cardHolderData
+      ? `<CardHolderData>` +
+        `<BillAddrCity>${esc(p.cardHolderData.billAddrCity)}</BillAddrCity>` +
+        `<BillAddrCountry>${esc(p.cardHolderData.billAddrCountry)}</BillAddrCountry>` +
+        `<BillAddrLine1>${esc(p.cardHolderData.billAddrLine1)}</BillAddrLine1>` +
+        `<BillAddrPostCode>${esc(p.cardHolderData.billAddrPostCode)}</BillAddrPostCode>` +
+        `<BillAddrState>${esc(p.cardHolderData.billAddrState)}</BillAddrState>` +
+        `<Email>${esc(p.cardHolderData.email)}</Email>` +
+        `<MobilePhone><Cc>${esc(p.cardHolderData.phoneCc)}</Cc><Subscriber>${esc(p.cardHolderData.phoneSubscriber)}</Subscriber></MobilePhone>` +
+        `</CardHolderData>`
+      : "") +
     `<CardNumber>${esc(p.cardNumber)}</CardNumber>` +
     `<CardExpireDateYear>${esc(p.cardExpireDateYear)}</CardExpireDateYear>` +
     `<CardExpireDateMonth>${esc(p.cardExpireDateMonth)}</CardExpireDateMonth>` +
@@ -216,10 +274,29 @@ export async function postToBank(url: string, xml: string): Promise<string> {
   return res.text();
 }
 
-/** Generates a unique alphanumeric MerchantOrderId (ASCII, safe for hashing). */
-export function generateMerchantOrderId(): string {
-  const rand = crypto.randomBytes(3).toString("hex").toUpperCase();
-  return `HC${Date.now()}${rand}`;
+// ─── MerchantOrderId ──────────────────────────────────────────────────────────
+//
+// The bank requires a UNIQUE MerchantOrderId per attempt — reusing one (which we
+// did while it was just the booking number) gets the retry rejected at the 3DS
+// step. So each attempt gets a fresh nonce, appended to the booking number:
+//
+//     HOM-07-26-001  ──►  HOM-07-26-001-9F3A21C4
+//
+// Traceability is preserved without a schema change: the booking number IS the
+// order id's prefix, so `bookingNumberFromOrderId` recovers it exactly. The
+// nonce is uppercase hex — never a "-" — so "everything before the last dash"
+// is an unambiguous split.
+
+/** Fresh, unique MerchantOrderId for one payment attempt on `bookingNumber`. */
+export function buildMerchantOrderId(bookingNumber: string): string {
+  const nonce = crypto.randomBytes(4).toString("hex").toUpperCase();
+  return `${bookingNumber}-${nonce}`;
+}
+
+/** Inverse of `buildMerchantOrderId` — recovers the booking number. */
+export function bookingNumberFromOrderId(merchantOrderId: string): string {
+  const i = merchantOrderId.lastIndexOf("-");
+  return i > 0 ? merchantOrderId.slice(0, i) : merchantOrderId;
 }
 
 /**

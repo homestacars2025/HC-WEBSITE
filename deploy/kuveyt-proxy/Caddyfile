@@ -1,34 +1,46 @@
-# Kuveyt Türk Sanal POS — static-IP reverse proxy
+# Kuveyt Türk Sanal POS — static-IP reverse proxy (+ 3DS callback relay)
 #
-# Purpose: make bank calls originate from the Easypanel server's IP
-# (185.170.196.106) instead of Vercel's dynamic egress, which Kuveyt's gateway
-# does not accept. The Vercel app points KUVEYT_PAYGATE_URL / KUVEYT_PROVISION_URL
-# at this proxy; Caddy forwards each request to the bank unchanged (same path,
-# same XML body) but from a whitelistable IP.
+# Two jobs on the same proxy (static IP 185.170.196.106, whitelisted by Kuveyt):
+#   1. /sanalposservice/*  → the bank (boa.kuveytturk.com.tr). UNCHANGED — this
+#      is what makes payments work.
+#   2. /pay-callback       → relay the bank's 3DS result POST to a protected
+#      Vercel PREVIEW, adding the automation-bypass as a HEADER (server-to-server,
+#      no redirect) so the top-level POST + body survive (a query-param bypass
+#      would 302→GET-downgrade it and drop the MD).
 #
-# TLS: the PUBLIC https cert for pay-proxy-caddy.gdsddq.easypanel.host is issued
-# and terminated by Easypanel's own ingress (Traefik). This proxy therefore only
-# listens on plain HTTP :80 *behind* that ingress — do NOT try to make Caddy
-# obtain its own cert here.
+# Public TLS for pay-proxy-caddy.gdsddq.easypanel.host is terminated by Easypanel's
+# ingress; Caddy listens plain HTTP :80 behind it.
 
 :80 {
-	# Local health check — answered here, never touches the bank.
-	@health path /healthz
-	respond @health "ok" 200
-
-	# Everything else → Kuveyt Türk PRODUCTION gateway.
-	#   - https:// upstream ⇒ Caddy dials over TLS (SNI + cert verify use the
-	#     upstream host boa.kuveytturk.com.tr).
-	#   - header_up Host … ⇒ the HTTP Host header the bank expects.
-	#   - request path and body are preserved as-is, so the app's
-	#     /sanalposservice/Home/ThreeDModel… path reaches the bank unchanged.
-	# (For the TEST gateway instead, use https://boatest.kuveytturk.com.tr and
-	#  the app path /boa.virtualpos.services/… .)
-	reverse_proxy https://boa.kuveytturk.com.tr {
-		header_up Host boa.kuveytturk.com.tr
+	# Local health check — answered here, never leaves the box.
+	handle /healthz {
+		respond "ok" 200
 	}
 
-	# Send access logs to stdout so they show up in Easypanel → Logs.
+	# ── 3DS callback relay → Vercel preview /api/payment/confirm ───────────────
+	# reverse_proxy preserves method (POST), body (the url-encoded
+	# AuthenticationResponse) and Content-Type, and does NOT redirect.
+	# Host = the stable preview alias so Vercel routes to the right deployment;
+	# the bypass HEADER clears Deployment Protection without a redirect.
+	# >>> Replace PASTE_YOUR_BYPASS_SECRET_HERE with the Protection-Bypass-for-
+	#     Automation secret from Vercel (Settings → Deployment Protection). <<<
+	handle /pay-callback {
+		rewrite * /api/payment/confirm
+		reverse_proxy https://hc-kuveyt-cb.vercel.app {
+			header_up Host hc-kuveyt-cb.vercel.app
+			header_up x-vercel-protection-bypass PASTE_YOUR_BYPASS_SECRET_HERE
+		}
+	}
+
+	# ── Kuveyt bank passthrough (catch-all, UNCHANGED) ─────────────────────────
+	# Everything else — including /sanalposservice/Home/ThreeDModel… — goes to the
+	# production bank exactly as before.
+	handle {
+		reverse_proxy https://boa.kuveytturk.com.tr {
+			header_up Host boa.kuveytturk.com.tr
+		}
+	}
+
 	log {
 		output stdout
 		format console

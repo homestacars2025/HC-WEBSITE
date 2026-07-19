@@ -5,7 +5,7 @@ import {
   buildEnrollmentXml,
   toKurus,
   postToBank,
-  requestOrigin,
+  buildMerchantOrderId,
 } from "@/lib/kuveytturk";
 import { createClient } from "@/lib/supabase/server";
 
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
   const supabase = await createClient();
   const { data: booking, error: bookingErr } = await supabase
     .from("bookings")
-    .select("booking_number, total_amount, currency, payment_status")
+    .select("booking_number, total_amount, currency, payment_status, customer_id")
     .eq("booking_number", bookingNumber)
     .maybeSingle();
 
@@ -76,6 +76,31 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "amount_unavailable" }, { status: 409 });
   }
   const amount = toKurus(amountTl);
+
+  // ── CardHolderData (3DS 2.0): source Email/phone from the booking's customer,
+  //    sane defaults for the rest. ──
+  const { data: customer } = await supabase
+    .from("customers")
+    .select("email, phone")
+    .eq("id", (booking as { customer_id?: string | number }).customer_id)
+    .maybeSingle();
+
+  const custEmail = (customer as { email?: string } | null)?.email?.trim() || "";
+  const custPhone = (customer as { phone?: string } | null)?.phone ?? "";
+  const phoneDigits = custPhone.replace(/\D/g, "");
+  const phoneSubscriber = phoneDigits.length >= 10 ? phoneDigits.slice(-10) : phoneDigits;
+  const phoneCc = phoneDigits.length > 10 ? phoneDigits.slice(0, -10) : "90";
+
+  const cardHolderData = {
+    billAddrCity: "Istanbul",
+    billAddrCountry: "792", // Türkiye
+    billAddrLine1: "Istanbul",
+    billAddrPostCode: "34000",
+    billAddrState: "34",
+    email: custEmail || "info@homestacars.com",
+    phoneCc: phoneCc || "90",
+    phoneSubscriber: phoneSubscriber || "5000000000",
+  };
 
   // ── Validate card ──
   const cardNumber = (body.cardNumber ?? "").replace(/\s+/g, "");
@@ -97,17 +122,30 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid_holder" }, { status: 400 });
   }
 
-  // Tie the bank transaction to the booking for traceability and so the confirm
-  // step can mark the booking paid.
-  const merchantOrderId = bookingNumber;
+  // Unique per ATTEMPT — the bank rejects a reused MerchantOrderId, which broke
+  // every retry back when this was just `bookingNumber`. The booking number stays
+  // the order id's prefix, so confirm can trace it back for reconciliation.
+  const merchantOrderId = buildMerchantOrderId(bookingNumber);
 
   // The bank posts the auth result to these URLs; /api/payment/confirm parses
   // it, runs the provision step, then forwards the browser to the result page.
-  // Derive the origin from the request so the callback returns to THIS
-  // deployment (e.g. a Vercel preview URL), not the configured production host.
-  const origin = requestOrigin(req.headers, cfg.siteUrl);
-  const okUrl = `${origin}/api/payment/confirm`;
-  const failUrl = `${origin}/api/payment/confirm`;
+  // ONE canonical origin (cfg.siteUrl / NEXT_PUBLIC_SITE_URL) is used for BOTH
+  // the hash string and the XML tag, so they are byte-identical and resolve on
+  // a single live domain (avoids the www/non-www hash mismatch).
+  // On a protected Vercel PREVIEW, the bank's 3DS result is a cross-site top-level
+  // POST to OkUrl. A query-param protection bypass would 302→GET-downgrade that
+  // POST (losing the body/MD). So OkUrl points at a PUBLIC proxy path with NO
+  // query string; the proxy relays the POST server-to-server to
+  // /api/payment/confirm adding `x-vercel-protection-bypass` as a HEADER, which
+  // does not redirect and preserves method + body. No query string ⇒ esc() can't
+  // alter it ⇒ hashed OkUrl stays byte-identical to the <OkUrl> tag. On
+  // production, OkUrl is the direct (unprotected) canonical callback.
+  const previewCallback =
+    process.env.VERCEL_ENV === "preview"
+      ? process.env.KUVEYT_PREVIEW_CALLBACK_URL?.trim()
+      : undefined;
+  const okUrl = previewCallback || `${cfg.siteUrl}/api/payment/confirm`;
+  const failUrl = okUrl;
 
   const hashData = buildEnrollmentHash(cfg, { merchantOrderId, amount, okUrl, failUrl });
   const xml = buildEnrollmentXml(cfg, {
@@ -121,6 +159,7 @@ export async function POST(req: NextRequest) {
     cardExpireDateMonth: expireMonth,
     cardCVV2: cvv,
     cardHolderName,
+    cardHolderData,
     hashData,
   });
 
