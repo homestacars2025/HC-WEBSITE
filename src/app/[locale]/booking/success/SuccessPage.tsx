@@ -4,6 +4,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { CheckCircle2, MessageCircle, Home, CreditCard } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { WHATSAPP_URL } from "@/lib/whatsapp";
+import { ONLINE_PAYMENT_ENABLED } from "@/lib/feature-flags";
 
 interface Props {
   bookingNumber: string;
@@ -60,8 +61,11 @@ export default function SuccessPage({ bookingNumber, carName }: Props) {
               {t("message")}
             </p>
 
-            {/* Pay online — amount is fixed by the booking, computed server-side */}
-            {bookingNumber && (
+            {/* Pay online — amount is fixed by the booking, computed server-side.
+                HIDDEN while ONLINE_PAYMENT_ENABLED is false: the team sends a
+                payment link after reviewing availability. The payment flow
+                itself is untouched and still works — see feature-flags.ts. */}
+            {ONLINE_PAYMENT_ENABLED && bookingNumber && (
               <Link
                 href={`/payment/checkout?booking=${encodeURIComponent(bookingNumber)}`}
                 className="flex items-center justify-center gap-2.5 h-[52px] px-7 rounded-2xl bg-[#4ba6ea] text-white text-[15px] font-semibold hover:bg-[#3a95d9] active:scale-[0.98] transition-all duration-150 mb-3"
