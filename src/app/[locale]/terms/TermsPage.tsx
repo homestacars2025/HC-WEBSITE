@@ -21,7 +21,7 @@ export default function TermsPage() {
   return (
     <div
       dir={isRTL ? "rtl" : "ltr"}
-      className={cn("bg-white min-h-screen", isRTL && "font-[Cairo]")}
+      className="bg-white min-h-screen"
     >
       <div className="max-w-[760px] mx-auto px-6 py-24">
 

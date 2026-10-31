@@ -130,8 +130,8 @@ function StepBar({ t }: { t: T }) {
 
 // ─── Summary row ──────────────────────────────────────────────────────────────
 
-function SummaryRow({ label, value, bold = false, discount = false, highlight = false }: {
-  label: string; value: string; bold?: boolean; discount?: boolean; highlight?: boolean;
+function SummaryRow({ label, value, bold = false, discount = false, highlight = false, money = false }: {
+  label: string; value: string; bold?: boolean; discount?: boolean; highlight?: boolean; money?: boolean;
 }) {
   return (
     <div className="flex items-center justify-between gap-3">
@@ -141,6 +141,7 @@ function SummaryRow({ label, value, bold = false, discount = false, highlight = 
       )}>{label}</span>
       <span className={cn(
         "text-[13px]",
+        money && "font-mono tabular-nums",
         bold ? "font-bold text-[#0a0a0a]" : discount ? "font-semibold text-green-600" : highlight ? "font-semibold text-[#4ba6ea]" : "text-[#1d1d1f]",
       )}>{value}</span>
     </div>
@@ -432,12 +433,14 @@ export default function InsurancePage({ model, pickupDate, returnDate }: Insuran
                   <SummaryRow
                     label={t("summaryBaseRate")}
                     value={`${displayPrice(model.price)} × ${days} ${days === 1 ? t("summaryDay") : t("summaryDays")}`}
+                    money
                   />
                   {tier && rentalSavings > 0 && (
                     <SummaryRow
                       label={`${t("summaryDiscount")} (${tier.discount_percent}%)`}
                       value={`-${displayPrice(rentalSavings)}`}
                       discount
+                      money
                     />
                   )}
                   {selectedPkg.pricePct > 0 && (
@@ -445,10 +448,11 @@ export default function InsurancePage({ model, pickupDate, returnDate }: Insuran
                       label={`${t("summaryInsurance")} (${selectedPkg.pricePct}%)`}
                       value={displayPrice(insuranceCost)}
                       highlight
+                      money
                     />
                   )}
                   <div className="border-t border-[#f0f0f0] pt-2">
-                    <SummaryRow label={t("summarySubtotal")} value={displayPrice(grandTotal)} bold />
+                    <SummaryRow label={t("summarySubtotal")} value={displayPrice(grandTotal)} bold money />
                   </div>
                 </div>
               )}

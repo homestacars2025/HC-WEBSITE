@@ -4,12 +4,21 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Not `inline`: utilities must read --font-sans at runtime so [lang="ar"] can
+   swap it. Weights match homestastay.com, which tops out at 600. */
+@theme {
+  /* Geist first; Arabic glyphs (e.g. Arabic customer names in an English UI) fall back to Plex per glyph */
+  --font-sans: var(--font-geist-sans), var(--font-plex-arabic), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), var(--font-plex-arabic), ui-monospace, monospace;
+  --font-heading: var(--font-sans);
+  --font-weight-bold: 600;
+  --font-weight-extrabold: 600;
+  --font-weight-black: 600;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-inter);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -129,15 +138,25 @@
   }
 }
 
-/* Unlayered — wins over every @layer rule including @layer utilities.
-   Scoped to dir="ltr" so Arabic (dir="rtl") is never affected. */
-html[dir="ltr"],
-html[dir="ltr"] body,
-html[dir="ltr"] h1,
-html[dir="ltr"] h2,
-html[dir="ltr"] h3,
-html[dir="ltr"] h4,
-html[dir="ltr"] h5,
-html[dir="ltr"] h6 {
-  font-family: var(--font-inter, ui-sans-serif, system-ui, sans-serif);
+/* Unlayered — wins over every @layer rule including @layer utilities. */
+[lang="ar"] {
+  --font-sans: var(--font-plex-arabic), ui-sans-serif, system-ui, sans-serif;
+}
+/* Never track Arabic script. */
+[lang="ar"] body,
+[lang="ar"] .font-mono,
+[lang="ar"] [class*="tracking-"] {
+  letter-spacing: normal;
+}
+body {
+  font-family: var(--font-sans);
+  letter-spacing: -0.01em;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 500;
 }

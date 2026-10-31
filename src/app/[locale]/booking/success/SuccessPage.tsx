@@ -51,7 +51,7 @@ export default function SuccessPage({ bookingNumber, carName }: Props) {
               <p className="text-[12px] font-semibold text-[#86868b] uppercase tracking-widest mb-2">
                 {t("bookingRef")}
               </p>
-              <p className="text-[32px] font-bold text-[#4ba6ea] tracking-[0.12em] font-mono">
+              <p className="text-[32px] font-bold text-[#4ba6ea] tracking-[0.12em] font-mono tabular-nums">
                 {displayRef}
               </p>
             </div>

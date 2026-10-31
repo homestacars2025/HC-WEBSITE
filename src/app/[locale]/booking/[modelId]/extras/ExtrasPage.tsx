@@ -198,11 +198,13 @@ function SummaryRow({
   value,
   bold = false,
   discount = false,
+  money = false,
 }: {
   label: string;
   value: string;
   bold?: boolean;
   discount?: boolean;
+  money?: boolean;
 }) {
   return (
     <div className="flex items-center justify-between gap-3">
@@ -216,6 +218,7 @@ function SummaryRow({
       </span>
       <span className={cn(
         "text-[13px]",
+        money && "font-mono tabular-nums",
         bold     ? "font-bold text-[#0a0a0a]" :
         discount ? "font-semibold text-green-600" :
                    "text-[#1d1d1f]",
@@ -491,12 +494,14 @@ export default function ExtrasPage({ model, pickupDate, returnDate, insurancePac
                   <SummaryRow
                     label={t("summaryBaseRate")}
                     value={`${displayPrice(model.price)} × ${days} ${days === 1 ? t("summaryDay") : t("summaryDays")}`}
+                    money
                   />
                   {tier && savings > 0 && (
                     <SummaryRow
                       label={`${t("summaryDiscount")} (${tier.discount_percent}%)`}
                       value={`-${displayPrice(savings)}`}
                       discount
+                      money
                     />
                   )}
                   <div className="border-t border-[#f0f0f0] pt-2">
@@ -504,6 +509,7 @@ export default function ExtrasPage({ model, pickupDate, returnDate, insurancePac
                       label={t("summarySubtotal")}
                       value={displayPrice(subtotal)}
                       bold
+                      money
                     />
                   </div>
                 </div>

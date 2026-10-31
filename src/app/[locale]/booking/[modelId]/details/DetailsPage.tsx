@@ -263,12 +263,14 @@ function SummaryRow({
   bold = false,
   discount = false,
   large = false,
+  money = false,
 }: {
   label: string;
   value: string;
   bold?: boolean;
   discount?: boolean;
   large?: boolean;
+  money?: boolean;
 }) {
   return (
     <div className="flex items-center justify-between gap-3">
@@ -281,6 +283,7 @@ function SummaryRow({
         {label}
       </span>
       <span className={cn(
+        money && "font-mono tabular-nums",
         discount ? "font-semibold text-green-600 text-[13px]" :
         large    ? "text-[17px] font-bold text-[#0a0a0a]" :
         bold     ? "text-[13px] font-bold text-[#0a0a0a]" :
@@ -790,15 +793,17 @@ export default function DetailsPage({
                   <SummaryRow
                     label={t("summaryBaseRate")}
                     value={`${displayPrice(model.price)} × ${days} ${days === 1 ? t("summaryDay") : t("summaryDays")}`}
+                    money
                   />
                   {tier && savings > 0 && (
                     <SummaryRow
                       label={`${t("summaryDiscount")} (${tier.discount_percent}%)`}
                       value={`-${displayPrice(savings)}`}
                       discount
+                      money
                     />
                   )}
-                  <SummaryRow label={t("summaryRental")} value={displayPrice(carSubtotal)} bold />
+                  <SummaryRow label={t("summaryRental")} value={displayPrice(carSubtotal)} bold money />
 
                   {insurancePct > 0 ? (
                     <div className="flex items-center justify-between gap-3 pt-1">
@@ -842,18 +847,21 @@ export default function DetailsPage({
                       <SummaryRow
                         label={`${t("childSeat")} ×${childSeats}`}
                         value={`+${displayPrice(childSeatCostUSD)}`}
+                        money
                       />
                     )}
                     {additionalDrivers > 0 && (
                       <SummaryRow
                         label={`${t("additionalDriver")} ×${additionalDrivers}`}
                         value={`+${displayPriceTRY(ADDITIONAL_DRIVER_TRY * additionalDrivers)}`}
+                        money
                       />
                     )}
                     {extraKm && (
                       <SummaryRow
                         label={t("extraKm")}
                         value={`+${displayPriceTRY(EXTRA_KM_TRY)}`}
+                        money
                       />
                     )}
                   </div>
@@ -867,6 +875,7 @@ export default function DetailsPage({
                     label={t("summaryTotal")}
                     value={displayPrice(totalUSD)}
                     large
+                    money
                   />
                 </div>
               )}

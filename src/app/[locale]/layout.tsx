@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Cairo, Inter } from "next/font/google";
+import { IBM_Plex_Sans_Arabic } from "next/font/google";
+import localFont from "next/font/local";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -7,17 +8,29 @@ import { routing } from "@/i18n/routing";
 import { CurrencyProvider } from "@/lib/context/currency-context";
 import "../globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
+// Same files as geist/font/sans and geist/font/mono, loaded directly: those
+// wrappers put Arial / Courier New fallbacks inside their CSS variables, and
+// those fonts catch Arabic glyphs before --font-plex-arabic can.
+const geistSans = localFont({
+  src: "../../../node_modules/geist/dist/fonts/geist-sans/Geist-Variable.woff2",
+  variable: "--font-geist-sans",
+  weight: "100 900",
+  adjustFontFallback: false,
 });
 
-const cairo = Cairo({
+const geistMono = localFont({
+  src: "../../../node_modules/geist/dist/fonts/geist-mono/GeistMono-Variable.woff2",
+  variable: "--font-geist-mono",
+  weight: "100 900",
+  adjustFontFallback: false,
+});
+
+const plexArabic = IBM_Plex_Sans_Arabic({
   subsets: ["arabic", "latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-cairo",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-plex-arabic",
   display: "swap",
+  preload: false,
 });
 
 export async function generateMetadata({
@@ -56,7 +69,7 @@ export function generateStaticParams() {
 
 // This is the top-level layout for every page and the single place that renders
 // <html> and <body>. The locale comes from the route param (reliable for
-// lang/dir), so Arabic correctly gets dir="rtl" and the Cairo font.
+// lang/dir), so Arabic correctly gets dir="rtl" and IBM Plex Sans Arabic.
 export default async function LocaleLayout({
   children,
   params,
@@ -73,7 +86,6 @@ export default async function LocaleLayout({
   const messages = await getMessages();
   const t = await getTranslations({ locale, namespace: "metadata" });
   const dir = locale === "ar" ? "rtl" : "ltr";
-  const isArabic = locale === "ar";
 
   // Organization structured data — references the official brand logo.
   const SITE_URL = "https://homestacars.com";
@@ -90,12 +102,9 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       dir={dir}
-      className={`h-full antialiased ${isArabic ? cairo.variable : inter.variable}`}
+      className={`h-full antialiased ${geistSans.variable} ${geistMono.variable} ${plexArabic.variable}`}
     >
-      <body
-        className={`min-h-full flex flex-col bg-background text-foreground${isArabic ? " font-cairo" : ""}`}
-        style={isArabic ? { fontFamily: "var(--font-cairo), sans-serif" } : undefined}
-      >
+      <body className="min-h-full flex flex-col bg-background text-foreground">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}

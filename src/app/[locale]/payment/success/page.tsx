@@ -39,13 +39,13 @@ export default async function PaymentSuccessPage({ params, searchParams }: Props
               {order && (
                 <div className="flex justify-between gap-4">
                   <dt className="text-[#86868b]">{t("orderNo")}</dt>
-                  <dd className="font-medium" dir="ltr">{order}</dd>
+                  <dd className="font-medium font-mono tabular-nums" dir="ltr">{order}</dd>
                 </div>
               )}
               {ref && (
                 <div className="flex justify-between gap-4">
                   <dt className="text-[#86868b]">{t("refNo")}</dt>
-                  <dd className="font-medium" dir="ltr">{ref}</dd>
+                  <dd className="font-medium font-mono tabular-nums" dir="ltr">{ref}</dd>
                 </div>
               )}
             </dl>
