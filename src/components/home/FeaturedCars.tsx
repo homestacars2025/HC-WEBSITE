@@ -60,7 +60,7 @@ export default function FeaturedCars({ cars }: FeaturedCarsProps) {
         >
           <Link
             href="/fleet"
-            className="inline-flex items-center gap-1.5 text-[#4ba6ea] text-[15px] font-medium hover:underline underline-offset-4 transition-all duration-150"
+            className="inline-flex items-center gap-1.5 text-brand-strong text-[15px] font-medium hover:underline underline-offset-4 transition-all duration-150"
           >
             {t("viewAllCars")}
             <ArrowRight className="w-4 h-4 rtl:rotate-180" />

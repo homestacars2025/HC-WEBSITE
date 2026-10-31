@@ -64,7 +64,7 @@ export default function PrivacyPage() {
               <p>
                 <a
                   href="mailto:info@homestacars.com"
-                  className="text-[#4ba6ea] hover:underline"
+                  className="text-brand-strong hover:underline"
                 >
                   {t("s5Email")}
                 </a>
@@ -74,7 +74,7 @@ export default function PrivacyPage() {
                   href="https://wa.me/message/CUGF33QK7NX5C1"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#4ba6ea] hover:underline"
+                  className="text-brand-strong hover:underline"
                 >
                   {t("s5WhatsApp")}
                 </a>

@@ -47,11 +47,11 @@ export default function SuccessPage({ bookingNumber, carName }: Props) {
             <p className="text-[15px] text-[#1d1d1f] mb-6">{t("registered")}</p>
 
             {/* Booking reference */}
-            <div className="bg-[#f5f9ff] border border-[#dbeafe] rounded-2xl px-6 py-5 mb-6">
+            <div className="bg-brand/10 border border-brand/20 rounded-2xl px-6 py-5 mb-6">
               <p className="text-[12px] font-semibold text-[#86868b] uppercase tracking-widest mb-2">
                 {t("bookingRef")}
               </p>
-              <p className="text-[32px] font-bold text-[#4ba6ea] tracking-[0.12em] font-mono tabular-nums">
+              <p className="text-[32px] font-bold text-brand-strong tracking-[0.12em] font-mono tabular-nums">
                 {displayRef}
               </p>
             </div>
@@ -68,7 +68,7 @@ export default function SuccessPage({ bookingNumber, carName }: Props) {
             {ONLINE_PAYMENT_ENABLED && bookingNumber && (
               <Link
                 href={`/payment/checkout?booking=${encodeURIComponent(bookingNumber)}`}
-                className="flex items-center justify-center gap-2.5 h-[52px] px-7 rounded-2xl bg-[#4ba6ea] text-white text-[15px] font-semibold hover:bg-[#3a95d9] active:scale-[0.98] transition-all duration-150 mb-3"
+                className="flex items-center justify-center gap-2.5 h-[52px] px-7 rounded-2xl bg-brand-strong text-white text-[15px] font-semibold hover:bg-brand-strong-hover active:scale-[0.98] transition-all duration-150 mb-3"
               >
                 <CreditCard className="w-5 h-5" />
                 {t("payNow")}
@@ -88,7 +88,7 @@ export default function SuccessPage({ bookingNumber, carName }: Props) {
               </a>
               <Link
                 href="/"
-                className="flex items-center justify-center gap-2.5 h-[52px] px-7 rounded-2xl bg-white border border-[#e5e5e5] text-[#0a0a0a] text-[15px] font-semibold hover:border-[#4ba6ea] hover:text-[#4ba6ea] active:scale-[0.98] transition-all duration-150"
+                className="flex items-center justify-center gap-2.5 h-[52px] px-7 rounded-2xl bg-white border border-[#e5e5e5] text-[#0a0a0a] text-[15px] font-semibold hover:border-brand-strong hover:text-brand-strong active:scale-[0.98] transition-all duration-150"
               >
                 <Home className="w-5 h-5" />
                 {t("backHome")}

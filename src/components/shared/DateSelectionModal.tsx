@@ -104,8 +104,8 @@ export default function DateSelectionModal({ carId, onClose }: Props) {
             {/* Header */}
             <div className="flex items-start justify-between p-6 pb-4 border-b border-[#f0f0f0]">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#eef7ff] flex items-center justify-center shrink-0">
-                  <CalendarDays className="w-5 h-5 text-[#4ba6ea]" />
+                <div className="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center shrink-0">
+                  <CalendarDays className="w-5 h-5 text-brand" />
                 </div>
                 <div>
                   <h2 className="text-[17px] font-bold text-[#0a0a0a] leading-tight">
@@ -156,7 +156,7 @@ export default function DateSelectionModal({ carId, onClose }: Props) {
                 type="button"
                 onClick={handleContinue}
                 disabled={!canContinue}
-                className="w-full h-12 rounded-xl bg-[#4ba6ea] text-white text-[14px] font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#2d8fd4] active:scale-[0.98] transition-all duration-150"
+                className="w-full h-12 rounded-xl bg-brand-strong text-white text-[14px] font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-brand-strong-hover active:scale-[0.98] transition-all duration-150"
               >
                 {t("dateModal.continue")}
               </button>

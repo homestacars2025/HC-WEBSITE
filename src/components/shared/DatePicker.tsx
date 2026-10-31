@@ -166,7 +166,7 @@ export default function DatePicker({
         onClick={toggleOpen}
         className={cn(
           "w-full bg-[#f5f5f7] rounded-xl px-4 h-14 flex flex-col gap-0.5 justify-center text-start transition-all",
-          open ? "ring-2 ring-[#4ba6ea] bg-white" : "hover:bg-[#ebebeb]"
+          open ? "ring-2 ring-brand bg-white" : "hover:bg-[#ebebeb]"
         )}
       >
         <div className="flex items-center gap-1.5">
@@ -276,8 +276,8 @@ export default function DatePicker({
                       className={cn(
                         "w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-medium transition-colors",
                         isDisabled  && "text-[#d0d0d0] cursor-not-allowed",
-                        isEndpoint  && "bg-[#4ba6ea] text-white",
-                        isToday     && !isEndpoint && "ring-2 ring-[#4ba6ea] text-[#0a0a0a]",
+                        isEndpoint  && "bg-brand-strong text-white",
+                        isToday     && !isEndpoint && "ring-2 ring-brand text-[#0a0a0a]",
                         isInRange   && !isEndpoint && "text-[#1d4ed8]",
                         !isDisabled && !isEndpoint && !isToday && "hover:bg-[#f5f5f7] text-[#0a0a0a] cursor-pointer",
                       )}

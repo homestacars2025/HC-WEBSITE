@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 const inputCls =
   "w-full rounded-xl border border-[#e5e5e5] px-4 h-[52px] text-[15px] text-[#0a0a0a] bg-white " +
-  "focus:outline-none focus:border-[#4ba6ea] focus:shadow-[0_0_0_3px_rgba(75,166,234,0.12)] " +
+  "focus:outline-none focus:border-brand focus:ring-[3px] focus:ring-brand/12 " +
   "transition-all duration-200 placeholder:text-[#c0c0c0]";
 
 function formatCardNumber(value: string): string {
@@ -218,7 +218,7 @@ export default function CheckoutForm({
             disabled={submitting || !bookingValid}
             className={cn(
               "w-full h-[52px] rounded-xl text-white text-[15px] font-semibold",
-              "bg-[#4ba6ea] hover:bg-[#3a95d9] active:scale-[0.99]",
+              "bg-brand-strong hover:bg-brand-strong-hover active:scale-[0.99]",
               "transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed",
             )}
           >

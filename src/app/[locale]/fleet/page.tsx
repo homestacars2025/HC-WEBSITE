@@ -16,7 +16,7 @@ export default async function FleetPage() {
         {/* Page header */}
         <div className="border-b border-[#e5e5e5]">
           <div className="max-w-[1200px] mx-auto px-6 py-12">
-            <p className="text-[13px] font-semibold uppercase tracking-[0.1em] text-[#4ba6ea] mb-3">
+            <p className="text-[13px] font-semibold uppercase tracking-[0.1em] text-brand-strong mb-3">
               {t("title")}
             </p>
             <h1 className="text-[40px] sm:text-[52px] font-bold leading-[1.05] tracking-[-0.03em] text-[#0a0a0a]">

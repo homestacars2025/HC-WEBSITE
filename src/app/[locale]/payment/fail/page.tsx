@@ -57,7 +57,7 @@ export default async function PaymentFailPage({ params, searchParams }: Props) {
           <div className="flex flex-col gap-3">
             <Link
               href="/payment/checkout"
-              className="inline-flex items-center justify-center w-full h-[52px] rounded-xl bg-[#4ba6ea] text-white text-[15px] font-semibold hover:bg-[#3a95d9] transition-colors"
+              className="inline-flex items-center justify-center w-full h-[52px] rounded-xl bg-brand-strong text-white text-[15px] font-semibold hover:bg-brand-strong-hover transition-colors"
             >
               {t("tryAgain")}
             </Link>

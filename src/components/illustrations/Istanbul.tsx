@@ -16,7 +16,7 @@ export function HagiaSophia({ className }: Props) {
     <svg
       viewBox="0 0 520 310"
       fill="none"
-      stroke="#4ba6ea"
+      stroke="var(--brand)"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -117,7 +117,7 @@ export function GalataTower({ className }: Props) {
     <svg
       viewBox="0 0 160 340"
       fill="none"
-      stroke="#4ba6ea"
+      stroke="var(--brand)"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -197,7 +197,7 @@ export function BosphorusBridge({ className }: Props) {
     <svg
       viewBox="0 0 800 220"
       fill="none"
-      stroke="#4ba6ea"
+      stroke="var(--brand)"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -267,7 +267,7 @@ export function OttomanTulip({ className }: Props) {
     <svg
       viewBox="0 0 100 200"
       fill="none"
-      stroke="#4ba6ea"
+      stroke="var(--brand)"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"

@@ -110,7 +110,7 @@ export default function CarCard({ car, locale, index = 0 }: CarCardProps) {
 
         <Link
           href="/fleet"
-          className="group/btn inline-flex items-center justify-center gap-1.5 w-full py-2.5 rounded-full bg-[#f5f5f7] text-[#1d1d1f] text-[13px] font-semibold hover:bg-[#4ba6ea] hover:text-white transition-colors duration-200"
+          className="group/btn inline-flex items-center justify-center gap-1.5 w-full py-2.5 rounded-full bg-[#f5f5f7] text-[#1d1d1f] text-[13px] font-semibold hover:bg-brand-strong hover:text-white transition-colors duration-200"
         >
           {t("bookNow")}
           <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180 transition-transform duration-200 group-hover/btn:translate-x-0.5" />

@@ -1,4 +1,4 @@
-// Istanbul landmark SVG illustrations — decorative, monoline, #4ba6ea
+// Istanbul landmark SVG illustrations — decorative, monoline, var(--brand)
 
 interface IllustrationProps {
   className?: string;
@@ -12,7 +12,7 @@ export function HagiaSophia({ className }: IllustrationProps) {
     <svg
       viewBox="0 0 480 278"
       fill="none"
-      stroke="#4ba6ea"
+      stroke="var(--brand)"
       strokeWidth="1.4"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -94,7 +94,7 @@ export function GalataTower({ className }: IllustrationProps) {
     <svg
       viewBox="0 0 160 310"
       fill="none"
-      stroke="#4ba6ea"
+      stroke="var(--brand)"
       strokeWidth="1.4"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -162,7 +162,7 @@ export function BosphorusWave({ className }: IllustrationProps) {
     <svg
       viewBox="0 0 640 200"
       fill="none"
-      stroke="#4ba6ea"
+      stroke="var(--brand)"
       strokeWidth="1.4"
       strokeLinecap="round"
       strokeLinejoin="round"

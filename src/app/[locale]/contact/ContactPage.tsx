@@ -68,7 +68,7 @@ const inputCls = (error?: boolean) => cn(
   "focus:outline-none transition-all duration-200 placeholder:text-[#c0c0c0]",
   error
     ? "border-red-400 focus:border-red-500 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
-    : "border-[#e5e5e5] focus:border-[#4ba6ea] focus:shadow-[0_0_0_3px_rgba(75,166,234,0.12)]",
+    : "border-[#e5e5e5] focus:border-brand focus:ring-[3px] focus:ring-brand/12",
 );
 
 function fadeUp(delay = 0) {
@@ -184,9 +184,9 @@ export default function ContactPage() {
                 className="flex items-center gap-3.5 group"
               >
                 <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center shrink-0 group-hover:shadow-md transition-shadow">
-                  <Mail className="w-4 h-4 text-[#4ba6ea]" />
+                  <Mail className="w-4 h-4 text-brand" />
                 </div>
-                <span className="text-[15px] text-[#1d1d1f] group-hover:text-[#4ba6ea] transition-colors" dir="ltr">
+                <span className="text-[15px] text-[#1d1d1f] group-hover:text-brand-strong transition-colors" dir="ltr">
                   info@homestacars.com
                 </span>
               </a>
@@ -274,7 +274,7 @@ export default function ContactPage() {
                         dir={row.ltr ? "ltr" : undefined}
                       >
                         {row.href ? (
-                          <a href={row.href} className="hover:text-[#4ba6ea] transition-colors">
+                          <a href={row.href} className="hover:text-brand-strong transition-colors">
                             {row.value}
                           </a>
                         ) : (
@@ -335,10 +335,10 @@ export default function ContactPage() {
                           "flex items-center gap-1.5 px-4 py-2 rounded-full text-[14px] font-medium",
                           "border transition-all duration-150 focus:outline-none",
                           subject === s.id
-                            ? "bg-[#4ba6ea] border-[#4ba6ea] text-white shadow-sm"
+                            ? "bg-brand-strong border-brand-strong text-white shadow-sm"
                             : errors.subject
-                              ? "bg-white border-red-300 text-[#6e6e73] hover:border-[#4ba6ea] hover:text-[#4ba6ea]"
-                              : "bg-white border-[#e5e5e5] text-[#6e6e73] hover:border-[#4ba6ea] hover:text-[#4ba6ea]",
+                              ? "bg-white border-red-300 text-[#6e6e73] hover:border-brand-strong hover:text-brand-strong"
+                              : "bg-white border-[#e5e5e5] text-[#6e6e73] hover:border-brand-strong hover:text-brand-strong",
                         )}
                       >
                         <span>{s.emoji}</span>
@@ -421,7 +421,7 @@ export default function ContactPage() {
                     disabled={submitting}
                     className={cn(
                       "w-full h-[52px] rounded-xl text-white text-[15px] font-semibold",
-                      "bg-[#4ba6ea] hover:bg-[#3a95d9] active:scale-[0.99]",
+                      "bg-brand-strong hover:bg-brand-strong-hover active:scale-[0.99]",
                       "transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed",
                     )}
                   >

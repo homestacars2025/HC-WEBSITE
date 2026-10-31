@@ -162,7 +162,7 @@ export default function FleetCard({ car, index = 0, tiers = [], pickupDate, retu
         {hasDates ? (
           <Link
             href={bookingHref}
-            className="flex items-center justify-center gap-2 w-full rounded-xl bg-[#4ba6ea] text-white text-[14px] font-semibold hover:bg-[#2d8fd4] active:scale-[0.98] transition-all duration-150"
+            className="flex items-center justify-center gap-2 w-full rounded-xl bg-brand-strong text-white text-[14px] font-semibold hover:bg-brand-strong-hover active:scale-[0.98] transition-all duration-150"
             style={{ height: 48 }}
           >
             {t("bookNow")}
@@ -172,7 +172,7 @@ export default function FleetCard({ car, index = 0, tiers = [], pickupDate, retu
           <button
             type="button"
             onClick={() => setShowModal(true)}
-            className="flex items-center justify-center gap-2 w-full rounded-xl bg-[#4ba6ea] text-white text-[14px] font-semibold hover:bg-[#2d8fd4] active:scale-[0.98] transition-all duration-150"
+            className="flex items-center justify-center gap-2 w-full rounded-xl bg-brand-strong text-white text-[14px] font-semibold hover:bg-brand-strong-hover active:scale-[0.98] transition-all duration-150"
             style={{ height: 48 }}
           >
             {t("bookNow")}
@@ -193,7 +193,7 @@ export default function FleetCard({ car, index = 0, tiers = [], pickupDate, retu
 function SpecBox({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <div className="flex flex-col gap-1 bg-[#f5f5f7] rounded-xl px-3 py-2">
-      <span className="text-[#4ba6ea]">{icon}</span>
+      <span className="text-brand">{icon}</span>
       <span className="text-[11px] text-[#86868b] leading-none">{label}</span>
       <span className="text-[13px] font-bold text-[#1d1d1f] capitalize leading-none">{value}</span>
     </div>

@@ -68,7 +68,7 @@ export default function WhyHomesta() {
 
               {/* Icon — overlaps number bottom */}
               <div className="w-10 h-10 rounded-xl bg-[#f5f5f7] flex items-center justify-center -mt-4 mb-3">
-                <Icon className="w-5 h-5 text-[#4ba6ea]" />
+                <Icon className="w-5 h-5 text-brand" />
               </div>
 
               <h3 className="text-[16px] font-semibold text-[#1d1d1f] mb-2 leading-snug">

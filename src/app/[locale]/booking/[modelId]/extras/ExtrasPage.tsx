@@ -55,7 +55,7 @@ function StepBar({ t }: { t: T }) {
               className={cn(
                 "w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold transition-colors",
                 step.n < current   && "bg-green-500 text-white",
-                step.n === current && "bg-[#4ba6ea] text-white",
+                step.n === current && "bg-brand-strong text-white",
                 step.n > current   && "bg-[#f0f0f0] text-[#86868b]",
               )}
             >
@@ -108,7 +108,7 @@ function QuantitySelector({
           "w-9 h-9 rounded-full flex items-center justify-center border transition-all duration-150",
           value <= min
             ? "border-[#e5e5e5] text-[#c8c8c8] cursor-not-allowed"
-            : "border-[#4ba6ea] text-[#4ba6ea] hover:bg-[#4ba6ea] hover:text-white active:scale-95",
+            : "border-brand-strong text-brand-strong hover:bg-brand-strong hover:text-white active:scale-95",
         )}
         aria-label={tCommon("decrease")}
       >
@@ -126,7 +126,7 @@ function QuantitySelector({
           "w-9 h-9 rounded-full flex items-center justify-center border transition-all duration-150",
           value >= max
             ? "border-[#e5e5e5] text-[#c8c8c8] cursor-not-allowed"
-            : "border-[#4ba6ea] text-[#4ba6ea] hover:bg-[#4ba6ea] hover:text-white active:scale-95",
+            : "border-brand-strong text-brand-strong hover:bg-brand-strong hover:text-white active:scale-95",
         )}
         aria-label={tCommon("increase")}
       >
@@ -159,7 +159,7 @@ function Toggle({
       <div
         className={cn(
           "relative w-12 h-6 rounded-full transition-colors duration-200",
-          checked ? "bg-[#4ba6ea]" : "bg-[#d0d0d0]",
+          checked ? "bg-brand" : "bg-[#d0d0d0]",
         )}
       >
         <div
@@ -172,7 +172,7 @@ function Toggle({
       <span
         className={cn(
           "text-[13px] font-semibold transition-colors",
-          checked ? "text-[#4ba6ea]" : "text-[#86868b]",
+          checked ? "text-brand-strong" : "text-[#86868b]",
         )}
       >
         {checked ? labelOn : labelOff}
@@ -359,7 +359,7 @@ export default function ExtrasPage({ model, pickupDate, returnDate, insurancePac
                       <p className="text-[16px] font-bold text-[#0a0a0a] leading-snug">
                         {t("services.childSeat.title")}
                       </p>
-                      <span className="text-[14px] font-semibold text-[#4ba6ea] shrink-0">
+                      <span className="text-[14px] font-semibold text-brand-strong shrink-0">
                         {childSeatPriceLabel}
                       </span>
                     </div>
@@ -378,7 +378,7 @@ export default function ExtrasPage({ model, pickupDate, returnDate, insurancePac
               {/* Additional Driver */}
               <ServiceCard>
                 <div className="flex items-center gap-4 min-w-0 flex-1">
-                  <div className="w-12 h-12 rounded-xl bg-[#f0f9ff] flex items-center justify-center shrink-0 text-[24px]">
+                  <div className="w-12 h-12 rounded-xl bg-brand/10 flex items-center justify-center shrink-0 text-[24px]">
                     👤
                   </div>
                   <div className="min-w-0 flex-1">
@@ -386,7 +386,7 @@ export default function ExtrasPage({ model, pickupDate, returnDate, insurancePac
                       <p className="text-[16px] font-bold text-[#0a0a0a] leading-snug">
                         {t("services.additionalDriver.title")}
                       </p>
-                      <span className="text-[14px] font-semibold text-[#4ba6ea] shrink-0">
+                      <span className="text-[14px] font-semibold text-brand-strong shrink-0">
                         {additionalDriverLabel}
                       </span>
                     </div>
@@ -413,7 +413,7 @@ export default function ExtrasPage({ model, pickupDate, returnDate, insurancePac
                       <p className="text-[16px] font-bold text-[#0a0a0a] leading-snug">
                         {t("services.extraKm.title")}
                       </p>
-                      <span className="text-[14px] font-semibold text-[#4ba6ea] shrink-0">
+                      <span className="text-[14px] font-semibold text-brand-strong shrink-0">
                         {extraKmLabel}
                       </span>
                     </div>
@@ -433,7 +433,7 @@ export default function ExtrasPage({ model, pickupDate, returnDate, insurancePac
               {/* Continue button */}
               <button
                 onClick={handleContinue}
-                className="w-full h-13 rounded-2xl bg-[#4ba6ea] text-white text-[15px] font-semibold hover:bg-[#2d8fd4] active:scale-[0.99] transition-all duration-150 mt-4"
+                className="w-full h-13 rounded-2xl bg-brand-strong text-white text-[15px] font-semibold hover:bg-brand-strong-hover active:scale-[0.99] transition-all duration-150 mt-4"
                 style={{ height: 52 }}
               >
                 {t("continue")}
@@ -528,10 +528,10 @@ export default function ExtrasPage({ model, pickupDate, returnDate, insurancePac
                         className="flex items-center justify-between gap-2 text-[13px]"
                       >
                         <span className="flex items-center gap-1.5 text-[#1d1d1f] min-w-0">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#4ba6ea] shrink-0" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-brand shrink-0" />
                           <span className="truncate">{line.label}</span>
                         </span>
-                        <span className="text-[#4ba6ea] font-semibold shrink-0">{line.price}</span>
+                        <span className="text-brand-strong font-semibold shrink-0">{line.price}</span>
                       </li>
                     ))}
                   </ul>

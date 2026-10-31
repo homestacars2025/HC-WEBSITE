@@ -114,7 +114,7 @@ export default function SearchBar() {
             <div className="flex items-center p-3">
               <button
                 onClick={handleSearch}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#4ba6ea] text-white text-[14px] font-medium hover:bg-[#2d8fd4] active:scale-[0.98] transition-all duration-150"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-brand-strong text-white text-[14px] font-medium hover:bg-brand-strong-hover active:scale-[0.98] transition-all duration-150"
               >
                 <Search className="w-4 h-4" />
                 {t("searchCta")}

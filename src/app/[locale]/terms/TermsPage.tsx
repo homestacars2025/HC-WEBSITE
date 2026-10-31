@@ -65,7 +65,7 @@ export default function TermsPage() {
               {t("s6Body").split("info@homestacars.com")[0]}
               <a
                 href="mailto:info@homestacars.com"
-                className="text-[#4ba6ea] hover:underline"
+                className="text-brand-strong hover:underline"
               >
                 info@homestacars.com
               </a>

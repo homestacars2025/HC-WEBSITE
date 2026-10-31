@@ -110,7 +110,7 @@ export default function AboutPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: E }}
               className={cn(
-                "text-[13px] font-semibold uppercase tracking-[0.2em] text-[#4ba6ea] mb-6",
+                "text-[13px] font-semibold uppercase tracking-[0.2em] text-brand-strong mb-6",
                 isRTL && "text-right",
               )}
             >
@@ -159,7 +159,7 @@ export default function AboutPage() {
             >
               <Link
                 href="/fleet"
-                className="inline-flex items-center gap-2 h-[52px] px-8 rounded-2xl bg-[#4ba6ea] text-white text-[15px] font-semibold hover:bg-[#3a95d9] active:scale-[0.98] transition-all duration-150"
+                className="inline-flex items-center gap-2 h-[52px] px-8 rounded-2xl bg-brand-strong text-white text-[15px] font-semibold hover:bg-brand-strong-hover active:scale-[0.98] transition-all duration-150"
               >
                 {t("ctaButton")}
                 <ArrowUpRight className="w-4 h-4" />
@@ -246,7 +246,7 @@ export default function AboutPage() {
             transition={{ duration: 0.55, ease: E }}
             className="mb-16"
           >
-            <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#4ba6ea] mb-4">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-brand-strong mb-4">
               {locale === "ar" ? "مميزاتنا" : locale === "tr" ? "Avantajlar" : "Why us"}
             </p>
             <h2 className="text-[36px] lg:text-[48px] font-bold tracking-tight text-[#0a0a0a]">
@@ -331,7 +331,7 @@ export default function AboutPage() {
             transition={{ duration: 0.55, ease: E }}
             className="mb-14"
           >
-            <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#4ba6ea] mb-4">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-brand-strong mb-4">
               {locale === "ar" ? "المواقع" : locale === "tr" ? "Konumlar" : "Locations"}
             </p>
             <h2 className="text-[36px] lg:text-[48px] font-bold tracking-tight text-[#0a0a0a]">
@@ -362,8 +362,8 @@ export default function AboutPage() {
               >
                 {/* Top: icon + name */}
                 <div>
-                  <div className="w-12 h-12 rounded-xl bg-[#4ba6ea]/15 flex items-center justify-center mb-6">
-                    <MapPin className="w-5 h-5 text-[#4ba6ea]" />
+                  <div className="w-12 h-12 rounded-xl bg-brand/10 flex items-center justify-center mb-6">
+                    <MapPin className="w-5 h-5 text-brand" />
                   </div>
                   <h3 className="text-[22px] font-bold text-white leading-snug mb-1.5">
                     {t(branch.nameKey)}
@@ -377,7 +377,7 @@ export default function AboutPage() {
                     className={cn(
                       "inline-flex items-center gap-2 h-10 px-5 rounded-xl border border-white/20 text-[13px] font-semibold text-white",
                       "transition-all duration-200",
-                      "group-hover:bg-[#4ba6ea] group-hover:border-[#4ba6ea]",
+                      "group-hover:bg-brand-strong group-hover:border-brand-strong",
                     )}
                   >
                     {t("getDirections")}
@@ -388,7 +388,7 @@ export default function AboutPage() {
                 {/* Subtle corner glow on hover */}
                 <div
                   aria-hidden
-                  className="absolute -top-24 -right-24 w-48 h-48 rounded-full bg-[#4ba6ea] opacity-0 group-hover:opacity-[0.06] transition-opacity duration-500 blur-2xl pointer-events-none"
+                  className="absolute -top-24 -right-24 w-48 h-48 rounded-full bg-brand opacity-0 group-hover:opacity-[0.06] transition-opacity duration-500 blur-2xl pointer-events-none"
                 />
               </motion.a>
             ))}
@@ -412,7 +412,7 @@ export default function AboutPage() {
           </h2>
           <Link
             href="/fleet"
-            className="inline-flex items-center gap-2.5 h-[54px] px-10 rounded-2xl bg-[#4ba6ea] text-white text-[15px] font-semibold hover:bg-[#3a95d9] active:scale-[0.98] transition-all duration-150"
+            className="inline-flex items-center gap-2.5 h-[54px] px-10 rounded-2xl bg-brand-strong text-white text-[15px] font-semibold hover:bg-brand-strong-hover active:scale-[0.98] transition-all duration-150"
           >
             {t("ctaButton")}
             <ArrowUpRight className="w-4 h-4" />

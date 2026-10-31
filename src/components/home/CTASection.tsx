@@ -25,7 +25,7 @@ export default function CTASection() {
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
         >
-          <motion.p variants={rise} className="text-[13px] font-semibold uppercase tracking-[0.1em] text-[#4ba6ea] mb-3">
+          <motion.p variants={rise} className="text-[13px] font-semibold uppercase tracking-[0.1em] text-brand mb-3">
             {t("ctaEyebrow")}
           </motion.p>
 
@@ -40,7 +40,7 @@ export default function CTASection() {
           <motion.div variants={rise} className="flex items-center justify-center gap-3 flex-wrap">
             <Link
               href="/fleet"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-lg bg-[#4ba6ea] text-white text-[15px] font-medium hover:bg-[#2d8fd4] transition-colors duration-150"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-lg bg-brand-strong text-white text-[15px] font-medium hover:bg-brand-strong-hover transition-colors duration-150"
             >
               {t("ctaButton")}
               <ArrowRight className="w-4 h-4 rtl:rotate-180" />

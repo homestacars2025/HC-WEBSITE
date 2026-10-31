@@ -115,7 +115,7 @@ export default function Navbar() {
                 <DropdownMenuItem
                   key={c}
                   onClick={() => setCurrency(c)}
-                  className={cn("gap-2 cursor-pointer text-[13px]", currency === c && "text-[#4ba6ea] font-semibold")}
+                  className={cn("gap-2 cursor-pointer text-[13px]", currency === c && "text-brand-strong font-semibold")}
                 >
                   <span>{CURRENCY_SYMBOLS[c]}</span>
                   <span>{c}</span>
@@ -137,7 +137,7 @@ export default function Navbar() {
                 <DropdownMenuItem
                   key={l.value}
                   onClick={() => router.replace(pathname, { locale: l.value })}
-                  className={cn("gap-2 cursor-pointer text-[13px]", locale === l.value && "text-[#4ba6ea] font-semibold")}
+                  className={cn("gap-2 cursor-pointer text-[13px]", locale === l.value && "text-brand-strong font-semibold")}
                 >
                   <span>{l.flag}</span><span>{l.label}</span>
                 </DropdownMenuItem>
@@ -148,7 +148,7 @@ export default function Navbar() {
           {/* Book Now */}
           <Link
             href="/fleet"
-            className="ms-2 px-5 py-2 rounded-full bg-[#4ba6ea] text-white text-[13px] font-semibold hover:bg-[#2d8fd4] transition-colors duration-150 whitespace-nowrap"
+            className="ms-2 px-5 py-2 rounded-full bg-brand-strong text-white text-[13px] font-semibold hover:bg-brand-strong-hover transition-colors duration-150 whitespace-nowrap"
           >
             {t("bookNow")}
           </Link>
@@ -232,7 +232,7 @@ export default function Navbar() {
                   className={cn(
                     "flex-1 py-2.5 rounded-lg text-[13px] font-medium transition-colors",
                     currency === c
-                      ? "bg-[#4ba6ea] text-white"
+                      ? "bg-brand-strong text-white"
                       : "bg-[#f5f5f7] text-[#6e6e73] hover:bg-[#e8e8e8]"
                   )}
                 >
@@ -245,7 +245,7 @@ export default function Navbar() {
             <Link
               href="/fleet"
               onClick={() => setOpen(false)}
-              className="w-full py-2.5 rounded-full bg-[#4ba6ea] text-white text-[14px] font-semibold text-center hover:bg-[#2d8fd4] transition-colors"
+              className="w-full py-2.5 rounded-full bg-brand-strong text-white text-[14px] font-semibold text-center hover:bg-brand-strong-hover transition-colors"
             >
               {t("bookNow")}
             </Link>

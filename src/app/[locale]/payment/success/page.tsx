@@ -53,7 +53,7 @@ export default async function PaymentSuccessPage({ params, searchParams }: Props
 
           <Link
             href="/"
-            className="inline-flex items-center justify-center w-full h-[52px] rounded-xl bg-[#4ba6ea] text-white text-[15px] font-semibold hover:bg-[#3a95d9] transition-colors"
+            className="inline-flex items-center justify-center w-full h-[52px] rounded-xl bg-brand-strong text-white text-[15px] font-semibold hover:bg-brand-strong-hover transition-colors"
           >
             {t("backHome")}
           </Link>

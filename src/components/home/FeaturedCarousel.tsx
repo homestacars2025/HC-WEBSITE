@@ -162,17 +162,17 @@ function CarouselCard({
         {/* Specs row */}
         <div className="flex items-center gap-2 mt-2 text-[11px] text-[#6e6e73]">
           <span className="inline-flex items-center gap-1">
-            <Users className="w-3 h-3 text-[#4ba6ea]" />
+            <Users className="w-3 h-3 text-brand" />
             {car.seats} {t("seatsUnit")}
           </span>
           <span className="w-1 h-1 rounded-full bg-[#d0d0d0] shrink-0" />
           <span className="inline-flex items-center gap-1 capitalize">
-            <Settings2 className="w-3 h-3 text-[#4ba6ea]" />
+            <Settings2 className="w-3 h-3 text-brand" />
             {car.transmission}
           </span>
           <span className="w-1 h-1 rounded-full bg-[#d0d0d0] shrink-0" />
           <span className="inline-flex items-center gap-1 capitalize">
-            <Fuel className="w-3 h-3 text-[#4ba6ea]" />
+            <Fuel className="w-3 h-3 text-brand" />
             {car.fuel}
           </span>
         </div>
@@ -199,7 +199,7 @@ function CarouselCard({
         {isCenter && hasDates ? (
           <Link
             href={`/booking/${car.id}?from=${pickupDate}&to=${returnDate}`}
-            className="mt-auto flex items-center justify-center gap-2 w-full h-9 rounded-xl bg-[#4ba6ea] text-white text-[13px] font-semibold hover:bg-[#2d8fd4] active:scale-[0.98] transition-all duration-150"
+            className="mt-auto flex items-center justify-center gap-2 w-full h-9 rounded-xl bg-brand-strong text-white text-[13px] font-semibold hover:bg-brand-strong-hover active:scale-[0.98] transition-all duration-150"
           >
             {t("bookNow")}
             <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
@@ -208,7 +208,7 @@ function CarouselCard({
           <button
             type="button"
             onClick={isCenter ? () => setShowModal(true) : undefined}
-            className="mt-auto flex items-center justify-center gap-2 w-full h-9 rounded-xl bg-[#4ba6ea] text-white text-[13px] font-semibold hover:bg-[#2d8fd4] active:scale-[0.98] transition-all duration-150"
+            className="mt-auto flex items-center justify-center gap-2 w-full h-9 rounded-xl bg-brand-strong text-white text-[13px] font-semibold hover:bg-brand-strong-hover active:scale-[0.98] transition-all duration-150"
             style={{ pointerEvents: isCenter ? "auto" : "none" }}
           >
             {t("bookNow")}
@@ -357,7 +357,7 @@ export default function FeaturedCarousel() {
         </div>
         <Link
           href="/fleet"
-          className="inline-flex items-center gap-1.5 text-[#4ba6ea] text-[14px] font-medium hover:underline underline-offset-4"
+          className="inline-flex items-center gap-1.5 text-brand-strong text-[14px] font-medium hover:underline underline-offset-4"
         >
           {t("viewAllCars")}
           <ArrowRight className="w-4 h-4 rtl:rotate-180" />
@@ -414,7 +414,7 @@ export default function FeaturedCarousel() {
               className={cn(
                 "rounded-full transition-all duration-200",
                 activeIndex === i
-                  ? "w-6 h-2 bg-[#4ba6ea]"
+                  ? "w-6 h-2 bg-brand"
                   : "w-2 h-2 bg-[#c8c8c8] hover:bg-[#a0a0a0]"
               )}
             />

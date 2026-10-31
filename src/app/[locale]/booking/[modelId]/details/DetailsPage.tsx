@@ -81,7 +81,7 @@ function StepBar({ t }: { t: ReturnType<typeof useTranslations<"details">> }) {
             <div className={cn(
               "w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold transition-colors",
               step.n < current   && "bg-green-500 text-white",
-              step.n === current && "bg-[#4ba6ea] text-white",
+              step.n === current && "bg-brand-strong text-white",
               step.n > current   && "bg-[#f0f0f0] text-[#86868b]",
             )}>
               {step.n < current ? <Check className="w-4 h-4" /> : step.n}
@@ -112,7 +112,7 @@ const inputCls = (error?: boolean) => cn(
   "focus:outline-none transition-colors placeholder:text-[#c0c0c0]",
   error
     ? "border-red-400 focus:border-red-500"
-    : "border-[#e5e5e5] focus:border-[#4ba6ea]",
+    : "border-[#e5e5e5] focus:border-brand",
 );
 
 function FieldLabel({
@@ -199,7 +199,7 @@ function NationalitySelect({
           "w-full h-[52px] rounded-xl border px-4 text-[15px] bg-white",
           "flex items-center justify-between gap-2 transition-colors focus:outline-none",
           open
-            ? "border-[#4ba6ea]"
+            ? "border-brand"
             : error
               ? "border-red-400"
               : "border-[#e5e5e5] hover:border-[#c0c0c0]",
@@ -240,7 +240,7 @@ function NationalitySelect({
                   className={cn(
                     "w-full text-start px-4 py-2.5 text-[14px] transition-colors",
                     n.value === value
-                      ? "bg-[#4ba6ea]/10 text-[#4ba6ea] font-semibold"
+                      ? "bg-brand/10 text-brand-strong font-semibold"
                       : "text-[#1d1d1f] hover:bg-[#f5f5f7]",
                   )}
                 >
@@ -589,7 +589,7 @@ export default function DetailsPage({
                         onChange={(e) => setField("country_code", e.target.value)}
                         className={cn(
                           "h-[52px] rounded-xl border border-[#e5e5e5] px-3 text-[14px] text-[#0a0a0a] bg-white",
-                          "focus:outline-none focus:border-[#4ba6ea] transition-colors shrink-0 w-[120px]",
+                          "focus:outline-none focus:border-brand transition-colors shrink-0 w-[120px]",
                         )}
                       >
                         {COUNTRY_CODES.map((c) => (
@@ -650,7 +650,7 @@ export default function DetailsPage({
                         "focus:outline-none transition-colors",
                         errors.id_type
                           ? "border-red-400 focus:border-red-500"
-                          : "border-[#e5e5e5] focus:border-[#4ba6ea]",
+                          : "border-[#e5e5e5] focus:border-brand",
                       )}
                     >
                       <option value="">{t("idTypePlaceholder")}</option>
@@ -711,7 +711,7 @@ export default function DetailsPage({
                     <button
                       type="button"
                       onClick={handleBrowseOtherCars}
-                      className="flex-1 h-12 rounded-xl bg-[#4ba6ea] text-white text-[14px] font-semibold hover:bg-[#2d8fd4] active:scale-[0.98] transition-all duration-150"
+                      className="flex-1 h-12 rounded-xl bg-brand-strong text-white text-[14px] font-semibold hover:bg-brand-strong-hover active:scale-[0.98] transition-all duration-150"
                     >
                       {t("errorBrowseOtherCars")}
                     </button>

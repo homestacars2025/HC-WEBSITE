@@ -65,7 +65,7 @@ const NONE_WARN_KEYS = [
 const PALETTE = {
   none:   { strip: "bg-[#9ca3af]", ring: "ring-[#9ca3af]",   pct: "text-[#6b7280]",  btn: "bg-[#6b7280] hover:bg-[#4b5563]" },
   basic:  { strip: "bg-green-400", ring: "ring-green-400",   pct: "text-green-600",  btn: "bg-green-500 hover:bg-green-600" },
-  medium: { strip: "bg-[#4ba6ea]", ring: "ring-[#4ba6ea]",   pct: "text-[#4ba6ea]", btn: "bg-[#4ba6ea] hover:bg-[#2d8fd4]" },
+  medium: { strip: "bg-brand", ring: "ring-brand",   pct: "text-brand-strong", btn: "bg-brand-strong hover:bg-brand-strong-hover" },
   full:   { strip: "bg-[#1d1d1f]", ring: "ring-[#1d1d1f]/60",pct: "text-[#1d1d1f]", btn: "bg-[#1d1d1f] hover:bg-[#333]"   },
 } satisfies Record<PackageId, { strip: string; ring: string; pct: string; btn: string }>;
 
@@ -106,7 +106,7 @@ function StepBar({ t }: { t: T }) {
               <div className={cn(
                 "w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold",
                 n < current  && "bg-green-500 text-white",
-                n === current && "bg-[#4ba6ea] text-white",
+                n === current && "bg-brand-strong text-white",
                 n > current  && "bg-[#f0f0f0] text-[#86868b]",
               )}>
                 {n < current ? <Check className="w-4 h-4" /> : n}
@@ -137,12 +137,12 @@ function SummaryRow({ label, value, bold = false, discount = false, highlight = 
     <div className="flex items-center justify-between gap-3">
       <span className={cn(
         "text-[13px]",
-        bold ? "font-semibold text-[#0a0a0a]" : discount ? "text-green-600" : highlight ? "font-medium text-[#4ba6ea]" : "text-[#6e6e73]",
+        bold ? "font-semibold text-[#0a0a0a]" : discount ? "text-green-600" : highlight ? "font-medium text-brand-strong" : "text-[#6e6e73]",
       )}>{label}</span>
       <span className={cn(
         "text-[13px]",
         money && "font-mono tabular-nums",
-        bold ? "font-bold text-[#0a0a0a]" : discount ? "font-semibold text-green-600" : highlight ? "font-semibold text-[#4ba6ea]" : "text-[#1d1d1f]",
+        bold ? "font-bold text-[#0a0a0a]" : discount ? "font-semibold text-green-600" : highlight ? "font-semibold text-brand-strong" : "text-[#1d1d1f]",
       )}>{value}</span>
     </div>
   );
@@ -180,7 +180,7 @@ function PackageCard({
         selected
           ? cn("shadow-lg ring-4 ring-offset-0", pal.ring, "border-transparent")
           : "border-[#e5e5e5] hover:border-[#c8c8c8] shadow-sm hover:shadow-md",
-        pkg.popular && !selected && "border-[#4ba6ea]/40",
+        pkg.popular && !selected && "border-brand/40",
       )}
     >
       {/* Colour strip */}
@@ -188,7 +188,7 @@ function PackageCard({
 
       {/* Popular badge */}
       {pkg.popular && (
-        <div className="absolute top-3 end-3 bg-[#4ba6ea] text-white text-[10px] font-bold px-2.5 py-1 rounded-full leading-none">
+        <div className="absolute top-3 end-3 bg-brand-strong text-white text-[10px] font-bold px-2.5 py-1 rounded-full leading-none">
           {t("mostPopular")}
         </div>
       )}
@@ -461,9 +461,9 @@ export default function InsurancePage({ model, pickupDate, returnDate }: Insuran
               <div className={cn(
                 "flex items-center gap-2 rounded-xl px-3 py-2 mb-6",
                 PALETTE[selected].strip.replace("bg-", "bg-") + "/10",
-                "bg-[#f0f7ff]",
+                "bg-brand/10",
               )}>
-                <ShieldCheck className="w-4 h-4 text-[#4ba6ea] shrink-0" />
+                <ShieldCheck className="w-4 h-4 text-brand shrink-0" />
                 <span className="text-[12px] font-medium text-[#1d1d1f] truncate">
                   {t(`${selected}Name` as Parameters<typeof t>[0])}
                 </span>

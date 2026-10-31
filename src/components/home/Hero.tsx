@@ -123,7 +123,7 @@ export default function Hero() {
             variants={rise}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-[#e5e5e5] shadow-sm mb-6"
           >
-            <span className="w-2 h-2 rounded-full bg-[#4ba6ea] shrink-0" />
+            <span className="w-2 h-2 rounded-full bg-brand shrink-0" />
             <span className="text-[13px] text-[#6e6e73] font-medium">
               {t("heroBadge")}
             </span>
@@ -138,7 +138,7 @@ export default function Hero() {
             )}
           >
             {t("heroTitle1")}{" "}
-            <span className="text-[#4ba6ea]">{t("heroTitleHighlight")}</span>
+            <span className="text-brand-strong">{t("heroTitleHighlight")}</span>
           </motion.h1>
 
           {/* Subtitle */}
@@ -195,7 +195,7 @@ export default function Hero() {
             {/* Search button */}
             <button
               onClick={handleSearch}
-              className="w-full h-14 rounded-xl bg-[#4ba6ea] text-white text-[17px] font-[600] hover:bg-[#2d8fd4] active:scale-[0.99] transition-all duration-150 flex items-center justify-center gap-2.5"
+              className="w-full h-14 rounded-xl bg-brand-strong text-white text-[17px] font-[600] hover:bg-brand-strong-hover active:scale-[0.99] transition-all duration-150 flex items-center justify-center gap-2.5"
             >
               <Search className="w-5 h-5" />
               {t("searchButton")}
@@ -220,7 +220,7 @@ export default function Hero() {
                 key={text}
                 className="inline-flex items-center gap-1.5 text-[13px] text-[#86868b]"
               >
-                <Icon className="w-3.5 h-3.5 text-[#4ba6ea]" />
+                <Icon className="w-3.5 h-3.5 text-brand" />
                 {text}
               </span>
             ))}

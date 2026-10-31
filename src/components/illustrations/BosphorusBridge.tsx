@@ -12,7 +12,7 @@ export default function BosphorusBridge({ className }: Props) {
     <svg
       viewBox="0 0 640 200"
       fill="none"
-      stroke="#4ba6ea"
+      stroke="var(--brand)"
       strokeWidth="1.4"
       strokeLinecap="round"
       strokeLinejoin="round"
