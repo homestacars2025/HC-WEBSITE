@@ -9,6 +9,14 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  // There is no public careers listing: roles are reached only by their
+  // direct link (/{locale}/careers/{slug}), so the index goes to the home page.
+  async redirects() {
+    return [
+      { source: "/careers", destination: "/", permanent: false },
+      { source: "/:locale(ar|en|tr)/careers", destination: "/:locale", permanent: false },
+    ];
+  },
   images: {
     remotePatterns: [
       {

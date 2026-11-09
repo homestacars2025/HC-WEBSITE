@@ -2,11 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { AlertCircle, Check, FileText, Loader2, MessageCircle, Upload, X } from "lucide-react";
-import { Link } from "@/i18n/navigation";
+import { AlertCircle, Check, FileText, Loader2, Upload, X } from "lucide-react";
 import NationalitySelect from "@/components/shared/NationalitySelect";
 import { COUNTRY_CODES } from "@/lib/country-codes";
-import { WHATSAPP_URL } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
 import {
   CAREERS_API, FILE_SLOTS, MAX_FILE_BYTES, isFileSlot, optionLabel, optionValue, pickText,
@@ -252,6 +250,9 @@ export default function ApplicationForm({ slug, fields }: { slug: string; fields
     [fields],
   );
 
+  // Remember ?src= as soon as the role page opens, before any language switch drops it.
+  useEffect(() => { readSource(); }, []);
+
   useEffect(() => {
     if (success) successRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [success]);
@@ -406,23 +407,6 @@ export default function ApplicationForm({ slug, fields }: { slug: string; fields
         </div>
         <h2 className="text-[22px] font-semibold text-[#0a0a0a]">{t("successTitle")}</h2>
         <p dir="auto" className="mx-auto mt-3 max-w-md text-[16px] leading-relaxed text-[#3a3a3c]">{success}</p>
-        <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-center">
-          <a
-            href={WHATSAPP_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-green-700 px-6 text-[15px] font-semibold text-white hover:bg-green-800 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-green-700/30"
-          >
-            <MessageCircle className="h-5 w-5" aria-hidden />
-            {t("whatsappCta")}
-          </a>
-          <Link
-            href="/careers"
-            className="inline-flex h-12 items-center justify-center rounded-xl border border-[#dddddd] px-6 text-[15px] font-semibold text-[#0a0a0a] hover:bg-[#f7f7f7]"
-          >
-            {t("allRoles")}
-          </Link>
-        </div>
       </div>
     );
   }

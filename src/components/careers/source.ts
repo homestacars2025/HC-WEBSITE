@@ -6,8 +6,8 @@ const isSource = (v: string | null): v is string =>
 
 /**
  * Where the applicant came from: `?src=` on the current URL, else the value
- * remembered from an earlier careers page this session (so it survives the
- * click from /careers to a role, or a language switch), else "website".
+ * remembered earlier this session (so it survives a language switch, which
+ * drops the query string), else "website".
  */
 export function readSource(): string {
   if (typeof window === "undefined") return "website";

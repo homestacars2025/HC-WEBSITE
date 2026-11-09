@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { ArrowLeft, Briefcase } from "lucide-react";
-import { Link } from "@/i18n/navigation";
+import { Briefcase } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ApplicationForm from "@/components/careers/ApplicationForm";
-import CareersLanguageSwitch from "@/components/careers/CareersLanguageSwitch";
 import { fetchOpening } from "@/lib/careers";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
+
+// Roles are shared by direct link only and kept out of search results.
+const NO_INDEX: Metadata["robots"] = { index: false, follow: false };
 
 // One line for link previews: WhatsApp shows roughly the first 160 characters.
 function summarize(text: string | null): string {
@@ -23,17 +24,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     getTranslations({ locale, namespace: "metadata" }),
     fetchOpening(slug),
   ]);
-  if (!opening) return { title: t("closedTitle"), robots: { index: false } };
+  if (!opening) return { title: t("closedTitle"), robots: NO_INDEX };
 
   const description = summarize(opening.description) || t("roleMetaFallback");
   const url = `/${locale}/careers/${slug}`;
   return {
     title: opening.title,
     description,
-    alternates: {
-      canonical: url,
-      languages: { ar: `/ar/careers/${slug}`, en: `/en/careers/${slug}`, tr: `/tr/careers/${slug}` },
-    },
+    robots: NO_INDEX,
     // Repeats the layout's image: a page-level openGraph replaces it entirely.
     openGraph: {
       title: `${opening.title} | ${tm("siteName")}`,
@@ -61,18 +59,7 @@ export default async function CareerRolePage({ params }: Props) {
     <>
       <Navbar />
       <main className="min-h-screen bg-[#fafafa] pt-16">
-        <div className="mx-auto max-w-[720px] px-4 pb-16 pt-6 sm:px-6 sm:pt-10">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-            <Link
-              href="/careers"
-              className="inline-flex items-center gap-1.5 rounded-lg text-[14px] font-medium text-[#6e6e73] hover:text-[#0a0a0a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
-            >
-              <ArrowLeft className="h-4 w-4 rtl:rotate-180" aria-hidden />
-              {t("allRoles")}
-            </Link>
-            <CareersLanguageSwitch />
-          </div>
-
+        <div className="mx-auto max-w-[720px] px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
           {opening ? (
             <div className="space-y-8">
               <header className="px-1">
@@ -104,12 +91,6 @@ export default async function CareerRolePage({ params }: Props) {
               </div>
               <h1 className="text-[22px] font-semibold text-[#0a0a0a]">{t("closedTitle")}</h1>
               <p className="mx-auto mt-2 max-w-sm text-[15px] leading-relaxed text-[#6e6e73]">{t("closedText")}</p>
-              <Link
-                href="/careers"
-                className="mt-6 inline-flex h-12 items-center justify-center rounded-xl bg-brand-strong px-6 text-[15px] font-semibold text-white hover:bg-brand-strong-hover"
-              >
-                {t("seeRoles")}
-              </Link>
             </div>
           )}
         </div>

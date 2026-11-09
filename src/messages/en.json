@@ -420,8 +420,7 @@
     "terms": "Terms of Service",
     "allRightsReserved": "All rights reserved.",
     "followUs": "Follow Us",
-    "copyright": "Copyright",
-    "careers": "Careers"
+    "copyright": "Copyright"
   },
   "privacyPage": {
     "title": "Privacy Policy",
@@ -482,19 +481,7 @@
     "whatsappMessage": "Hello! I'd like to rent a car."
   },
   "careers": {
-    "metaTitle": "Careers",
-    "metaDescription": "Join the Homesta Cars team in Istanbul. See our open roles and apply online in a few minutes.",
     "roleMetaFallback": "Apply online in a few minutes. Homesta Cars, Istanbul.",
-    "eyebrow": "Careers",
-    "heading": "Join the Homesta Cars team",
-    "subheading": "We're hiring in Istanbul. Pick a role and apply from your phone in a few minutes.",
-    "openRoles": "Open roles",
-    "positions": "{count, plural, one {# opening} other {# openings}}",
-    "apply": "Apply",
-    "emptyTitle": "No open roles right now",
-    "emptyText": "New roles are posted here first. You can also message us on WhatsApp.",
-    "whatsappCta": "Message us on WhatsApp",
-    "allRoles": "All roles",
     "aboutRole": "About the role",
     "applyTitle": "Apply for this role",
     "applySubtitle": "It takes about 3 minutes. Fields marked * are required.",
@@ -537,9 +524,7 @@
     "successTitle": "Application sent",
     "successFallback": "Your application has been submitted. We will contact you soon.",
     "closedTitle": "This role is no longer open",
-    "closedText": "It may have been filled. Have a look at our other open roles.",
-    "seeRoles": "See open roles",
-    "language": "Language",
+    "closedText": "It may have been filled. Thank you for your interest.",
     "honeypot": "Leave this field empty"
   }
 }

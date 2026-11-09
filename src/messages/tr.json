@@ -353,8 +353,7 @@
     "terms": "Hizmet Şartları",
     "allRightsReserved": "Tüm hakları saklıdır.",
     "followUs": "Bizi Takip Edin",
-    "copyright": "Telif Hakkı",
-    "careers": "Kariyer"
+    "copyright": "Telif Hakkı"
   },
   "privacyPage": {
     "title": "Gizlilik Politikası",
@@ -482,19 +481,7 @@
     "whatsappMessage": "Merhaba! Araç kiralamak istiyorum."
   },
   "careers": {
-    "metaTitle": "Kariyer",
-    "metaDescription": "İstanbul'daki Homesta Cars ekibine katılın. Açık pozisyonları inceleyin ve birkaç dakikada online başvurun.",
     "roleMetaFallback": "Birkaç dakikada online başvurun. Homesta Cars, İstanbul.",
-    "eyebrow": "Kariyer",
-    "heading": "Homesta Cars ekibine katılın",
-    "subheading": "İstanbul'da işe alım yapıyoruz. Bir pozisyon seçin ve telefonunuzdan birkaç dakikada başvurun.",
-    "openRoles": "Açık pozisyonlar",
-    "positions": "{count, plural, other {# kişi alınacak}}",
-    "apply": "Başvur",
-    "emptyTitle": "Şu anda açık pozisyon yok",
-    "emptyText": "Yeni ilanlar önce burada yayınlanır. Bize WhatsApp'tan da yazabilirsiniz.",
-    "whatsappCta": "WhatsApp'tan yazın",
-    "allRoles": "Tüm ilanlar",
     "aboutRole": "Pozisyon hakkında",
     "applyTitle": "Bu pozisyona başvurun",
     "applySubtitle": "Yaklaşık 3 dakika sürer. * ile işaretli alanlar zorunludur.",
@@ -537,9 +524,7 @@
     "successTitle": "Başvurunuz gönderildi",
     "successFallback": "Başvurunuz alındı. En kısa sürede sizinle iletişime geçeceğiz.",
     "closedTitle": "Bu ilan artık yayında değil",
-    "closedText": "Pozisyon dolmuş olabilir. Diğer açık pozisyonlara göz atın.",
-    "seeRoles": "Açık pozisyonları gör",
-    "language": "Dil",
+    "closedText": "Pozisyon dolmuş olabilir. İlginiz için teşekkür ederiz.",
     "honeypot": "Bu alanı boş bırakın"
   }
 }
