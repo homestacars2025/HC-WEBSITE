@@ -47,6 +47,7 @@ export default function Footer() {
     { href: "/fleet" as const, label: tNav("fleet") },
     { href: "/about" as const, label: tNav("about") },
     { href: "/contact" as const, label: tNav("contact") },
+    { href: "/careers" as const, label: t("careers") },
   ];
 
   const socialLinks = [

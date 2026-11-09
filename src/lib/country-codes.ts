@@ -1,0 +1,22 @@
+// Dialling codes offered in phone inputs; Turkey first as the default.
+export const COUNTRY_CODES = [
+  { code: "+90",  flag: "🇹🇷", name: "Turkey"        },
+  { code: "+218", flag: "🇱🇾", name: "Libya"         },
+  { code: "+966", flag: "🇸🇦", name: "Saudi Arabia"  },
+  { code: "+971", flag: "🇦🇪", name: "UAE"           },
+  { code: "+962", flag: "🇯🇴", name: "Jordan"        },
+  { code: "+965", flag: "🇰🇼", name: "Kuwait"        },
+  { code: "+974", flag: "🇶🇦", name: "Qatar"         },
+  { code: "+973", flag: "🇧🇭", name: "Bahrain"       },
+  { code: "+968", flag: "🇴🇲", name: "Oman"          },
+  { code: "+20",  flag: "🇪🇬", name: "Egypt"         },
+  { code: "+213", flag: "🇩🇿", name: "Algeria"       },
+  { code: "+216", flag: "🇹🇳", name: "Tunisia"       },
+  { code: "+212", flag: "🇲🇦", name: "Morocco"       },
+  { code: "+1",   flag: "🇺🇸", name: "United States" },
+  { code: "+44",  flag: "🇬🇧", name: "United Kingdom"},
+  { code: "+49",  flag: "🇩🇪", name: "Germany"       },
+  { code: "+33",  flag: "🇫🇷", name: "France"        },
+  { code: "+39",  flag: "🇮🇹", name: "Italy"         },
+  { code: "+7",   flag: "🇷🇺", name: "Russia"        },
+];

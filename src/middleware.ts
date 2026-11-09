@@ -45,10 +45,16 @@ export default function middleware(request: NextRequest) {
     | SupportedLocale
     | undefined;
 
+  // Careers links are shared on WhatsApp with mostly Arabic-speaking
+  // applicants, so they open in Arabic unless a language was already chosen.
+  const isCareers = pathname === "/careers" || pathname.startsWith("/careers/");
+
   const targetLocale: SupportedLocale =
     savedLocale && (LOCALES as readonly string[]).includes(savedLocale)
       ? savedLocale
-      : parseAcceptLanguage(request.headers.get("accept-language"));
+      : isCareers
+        ? "ar"
+        : parseAcceptLanguage(request.headers.get("accept-language"));
 
   const url = request.nextUrl.clone();
   url.pathname =
